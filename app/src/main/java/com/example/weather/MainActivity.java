@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.weather.WebConnection.webconnection;
+import com.example.weather.WeatherAPI.WeatherParsing;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         try {
-            webconnection a = new webconnection();
-            a.execute();
 
         }catch (Exception E){
             Log.i("TEST", E.toString());
