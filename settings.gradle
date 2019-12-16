@@ -1,0 +1,2 @@
+include ':app', ':json-simple-1.1.1', ':poi-3.11'
+rootProject.name='weather'

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_left2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="30dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_right2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="30dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_top2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="40dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_bottom2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="40dp" />
+
+    <TextView
+        android:id="@+id/editText2"
+        android:layout_width="320dp"
+        android:layout_height="63dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="알람"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/gl_left2"
+        app:layout_constraintStart_toStartOf="@+id/gl_right2"
+        app:layout_constraintTop_toTopOf="@+id/gl_top2" />
+
+    <RadioGroup
+        android:id="@+id/rg_weather"
+        android:layout_width="316dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@+id/gl_left2"
+        app:layout_constraintStart_toStartOf="@+id/gl_right2"
+        app:layout_constraintTop_toBottomOf="@+id/tp_time">
+
+        <RadioButton
+            android:id="@+id/rb_fine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="맑음"
+            android:textAlignment="center" />
+
+        <RadioButton
+            android:id="@+id/rb_cloud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="흐림"
+            android:textAlignment="center" />
+
+        <RadioButton
+            android:id="@+id/rb_rain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="비"
+            android:textAlignment="center" />
+
+        <RadioButton
+            android:id="@+id/rb_snow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="눈"
+            android:textAlignment="center" />
+
+    </RadioGroup>
+
+    <TimePicker
+        android:id="@+id/tp_time"
+        android:layout_width="341dp"
+        android:layout_height="189dp"
+        android:layout_marginTop="50dp"
+        android:ems="10"
+        android:inputType="time"
+        android:timePickerMode="spinner"
+        app:layout_constraintEnd_toStartOf="@+id/gl_left2"
+        app:layout_constraintHorizontal_bias="0.555"
+        app:layout_constraintStart_toStartOf="@+id/gl_right2"
+        app:layout_constraintTop_toBottomOf="@+id/editText2" />
+
+    <Button
+        android:id="@+id/bt_finish"
+        android:layout_width="317dp"
+        android:layout_height="42dp"
+        android:text="설정 완료"
+        app:layout_constraintBottom_toTopOf="@+id/gl_bottom2"
+        app:layout_constraintEnd_toStartOf="@+id/gl_left2"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="@+id/gl_right2"
+        app:layout_constraintTop_toBottomOf="@+id/rg_weather"
+        app:layout_constraintVertical_bias="0.97" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
