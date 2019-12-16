@@ -38,7 +38,7 @@ public class AdressSearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_adress_search);
         Log.d("test", "onCreate");
 
         //editSearch = (EditText) findViewById(R.id.editSearch);
@@ -108,7 +108,7 @@ public class AdressSearchActivity extends AppCompatActivity {
         StringBuilder sb = new StringBuilder();
 
         try {
-            InputStream is = getBaseContext().getResources().getAssets().open("test1.xls");
+            InputStream is = getBaseContext().getResources().getAssets().open("location.xls");
             Workbook wb = Workbook.getWorkbook(is);
 
             if (wb != null) {
