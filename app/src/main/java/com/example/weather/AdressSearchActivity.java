@@ -19,6 +19,9 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
+
+#define
+
 public class AdressSearchActivity extends AppCompatActivity {
 
 
@@ -41,15 +44,17 @@ public class AdressSearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_adress_search);
         Log.d("test", "onCreate");
 
-        //editSearch = (EditText) findViewById(R.id.editSearch);
+        editSearch = (EditText) findViewById(R.id.SearchText);
+        editSearch = (EditText) findViewById(R.id.SearchText);
+
         //listView = (ListView) findViewById(R.id.listView);
 
-        list = new ArrayList<String>(); //리스트 생성
+        //list = new ArrayList<String>(); //리스트 생성
 
-        district = (EditText) findViewById(R.id.editText);
-        region = (EditText) findViewById(R.id.editText2);
-        state = (EditText) findViewById(R.id.editText3);
-        search = (Button) findViewById(R.id.search);
+
+
+
+        search = (Button) findViewById(R.id.searchBtn);
         resultLabel =(TextView) findViewById(R.id.textView);
 
 
@@ -57,14 +62,13 @@ public class AdressSearchActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
                 /* 버튼 클릭 헀을 때 동작
                 String districtValue = district.getText().toString();
                 String regionValue = district.getText().toString();
                 String stateValue = district.getText().toString();
                 */
 
-                StringBuilder searchResult = settingList(district.getText().toString(),region.getText().toString(),state.getText().toString());
+                StringBuilder searchResult = settingList(editSearch.getText().toString());
                 Log.d("test", "111111"+searchResult.toString());
                 resultLabel.setText(searchResult.toString());
             }
@@ -102,7 +106,7 @@ public class AdressSearchActivity extends AppCompatActivity {
 
 
     // 검색에 사용될 데이터를 리스트에 추가한다.  //검색 파트
-    private StringBuilder settingList(String districtValue,String regionValue,String stateValue) {
+    private StringBuilder settingList(String districtValue) {
 
         //데이터 저장
         StringBuilder sb = new StringBuilder();
@@ -120,17 +124,15 @@ public class AdressSearchActivity extends AppCompatActivity {
                     int rowTotal = sheet.getRows() - 1;
 
 
-
-
                     Log.i("test", "SearchStart");
 
                     for (int row = 0; row < rowTotal; row++) {
-                        if ((sheet.getCell(0, row).getContents().equals(districtValue)) && (sheet.getCell(1, row).getContents().equals(regionValue)) && (sheet.getCell(2, row).getContents().equals(stateValue))) {
+                        if ((sheet.getCell(2, row).getContents().equals(districtValue)) ) {
                             for (int col = 0; col < colTotal; col++) {
                                 sb.append(sheet.getCell(col, row).getContents() + "::");
                             }
                             Log.i("test", sb.toString());
-                            break;
+                            //break;
                         }
                     }
                     return sb;
