@@ -50,7 +50,8 @@ public class AdressSearchActivity extends AppCompatActivity {
 
         //list = new ArrayList<String>(); //리스트 생성
 
-
+        //TEST
+        
 
 
         search = (Button) findViewById(R.id.searchBtn);
