@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         TextView tw_weather = (TextView)findViewById(R.id.tw_weather);
         tw_weather.setText(sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
 
-        Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
-        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+//        Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
+//        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
     }
 
     public void weatherIcon(WeatherSet weather){
