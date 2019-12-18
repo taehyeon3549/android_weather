@@ -19,9 +19,6 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
-
-#define
-
 public class AdressSearchActivity extends AppCompatActivity {
 
 

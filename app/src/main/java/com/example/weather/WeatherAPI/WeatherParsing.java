@@ -41,7 +41,7 @@ public class WeatherParsing extends AsyncTask<Void, Void, Void>{
     }
 
     public JSONArray getWeatherJSONArray(String getUrl){
-        this.execute();
+        //this.execute();
 
         return resultArray;
     }
@@ -155,7 +155,9 @@ public class WeatherParsing extends AsyncTask<Void, Void, Void>{
         Log.i("TEST", BaseDate);
         Log.i("TEST", BaseTime);
 
-        address = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=ye3Vfiaa0XOU3HTyFOF9Cbn8x4X%2FLtWxwEm4DgIb6baeAHASEHo7zu49Yk2%2FqhIcpsSCl0fCV4%2FirHJ0asf2Og%3D%3D&base_date="+BaseDate+"&base_time="+BaseTime+"&nx=87&ny=90&_type=json&pageNo=";
+        address = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?" +
+                "ServiceKey=ye3Vfiaa0XOU3HTyFOF9Cbn8x4X%2FLtWxwEm4DgIb6baeAHASEHo7zu49Yk2%2FqhIcpsSCl0fCV4%2FirHJ0asf2Og%3D%3D" +
+                "&base_date="+BaseDate+"&base_time="+BaseTime+"&nx=87&ny=90&_type=json&pageNo=";
         protocol = "GET";
 
         super.onPreExecute();

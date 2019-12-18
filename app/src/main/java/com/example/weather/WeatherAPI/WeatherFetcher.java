@@ -1,11 +1,14 @@
 package com.example.weather.WeatherAPI;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import android.util.Log;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 public class WeatherFetcher {
     private final int BASE_DATE = 3;
@@ -14,7 +17,7 @@ public class WeatherFetcher {
     private final int NY = 9;
     private final String[] uri = {
             "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=",
-            "xxxx", //service key
+            "ye3Vfiaa0XOU3HTyFOF9Cbn8x4X%2FLtWxwEm4DgIb6baeAHASEHo7zu49Yk2%2FqhIcpsSCl0fCV4%2FirHJ0asf2Og%3D%3D", //service key
             "&base_date=", "", "&base_time=", "", "&nx=", "", "&ny=", "", "&_type=json"
     };
 
@@ -22,11 +25,10 @@ public class WeatherFetcher {
     private int hour;
     private int lastBaseTime;
 
-    private WeatherParsing jjp = null;
+    private WeatherParser jjp = null;
 
     public WeatherFetcher() {
-        jjp = WeatherParsing.getInstance();
-
+        jjp = WeatherParser.getInstance();
         calBase = Calendar.getInstance(); // 현재시간 가져옴
         calBase.set(Calendar.MINUTE, 0); // 분, 초 필요없음
         calBase.set(Calendar.SECOND, 0);
@@ -55,7 +57,7 @@ public class WeatherFetcher {
             return "0" + lastBaseTime + "00";
     }
 
-    public WeatherSet fetchWeather(String nx, String ny) {
+    public WeatherSet fetchWeather(String nx, String ny) throws ExecutionException, InterruptedException {
         WeatherSet ws = null;
         String sUrl = new String();
         int pop = -1, sky = -1;
@@ -69,11 +71,15 @@ public class WeatherFetcher {
         JSONArray jsonArr = jjp.getWeatherJSONArray(sUrl);
 
         for (int i = 0; i < jsonArr.size(); i++) {
-            JSONObject jobj = (JSONObject) jsonArr.get(i);
-            if (((String) jobj.get("category")).equals("POP"))
-                pop = (int) (long) jobj.get("fcstValue"); // JSON에서 ""로 감싸지지않은 값은 long 형이므로 casting 필수!
-            else if (((String) jobj.get("category")).equals("SKY"))
-                sky = (int) (long) jobj.get("fcstValue");
+            try {
+                JSONObject jobj = (JSONObject) jsonArr.get(i);
+                if (((String) jobj.get("category")).equals("POP"))
+                    pop = (int) (long) jobj.get("fcstValue"); // JSON에서 ""로 감싸지지않은 값은 long 형이므로 casting 필수!
+                else if (((String) jobj.get("category")).equals("SKY"))
+                    sky = (int) (long) jobj.get("fcstValue");
+            }catch (Exception E){
+                Log.i("TEST", E.toString());
+            }
         }
         if (pop != -1 && sky != -1){
             Date bd = calBase.getTime();
