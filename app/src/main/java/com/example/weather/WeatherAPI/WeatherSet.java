@@ -4,13 +4,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class WeatherSet {
-    private int pop;
+    private int pty;
     private int sky;
     private Date baseDate = null;
     private Date fcstDate = null;
 
     public WeatherSet(int p, int s, Date bd) {
-        pop = p;
+        pty = p;
         sky = s;
         baseDate = bd;
         Calendar calBase = Calendar.getInstance();
@@ -19,12 +19,31 @@ public class WeatherSet {
         fcstDate = calBase.getTime();
     }
 
-    public int getPop() {
-        return pop;
+    public String getPty() {
+        String retMsg = null;
+
+        switch (pty) {
+            case 0:
+                retMsg = "없음";
+                break;
+            case 1:
+                retMsg = "비";
+                break;
+            case 2:
+                retMsg = "눈/비";
+                break;
+            case 3:
+                retMsg = "눈";
+                break;
+            default:
+                retMsg = "Error";
+                break;
+        }
+        return retMsg;
     }
 
-    public void setPop(int p) {
-        pop = p;
+    public void setPty(int p) {
+        pty = p;
     }
 
     public int getSkyValue(){

@@ -25,10 +25,10 @@ public class WeatherFetcher {
     private int hour;
     private int lastBaseTime;
 
-    private WeatherParser jjp = null;
+    private WeatherParser weatherParser = null;
 
     public WeatherFetcher() {
-        jjp = WeatherParser.getInstance();
+        weatherParser = WeatherParser.getInstance();
         calBase = Calendar.getInstance(); // 현재시간 가져옴
         calBase.set(Calendar.MINUTE, 0); // 분, 초 필요없음
         calBase.set(Calendar.SECOND, 0);
@@ -61,19 +61,32 @@ public class WeatherFetcher {
         WeatherSet ws = null;
         String sUrl = new String();
         int pop = -1, sky = -1;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat( "HHmm");
+
+        Calendar now = Calendar.getInstance();
+
+        String BaseDate = dateFormat.format(now.getTime());
+        String BaseTime = timeFormat.format(now.getTime());
+
+        Log.i("TEST", BaseDate);
+        Log.i("TEST", now.getTime().toString());
+
         uri[BASE_DATE] = new SimpleDateFormat("yyyyMMdd").format(calBase.getTime());
         uri[BASE_TIME] = getBaseTime();
         uri[NX] = nx;
         uri[NY] = ny;
+
         for (int i = 0; i < uri.length; i++)
             sUrl += uri[i];
 
-        JSONArray jsonArr = jjp.getWeatherJSONArray(sUrl);
+        JSONArray jsonArr = weatherParser.getWeatherJSONArray(sUrl);
 
         for (int i = 0; i < jsonArr.size(); i++) {
             try {
                 JSONObject jobj = (JSONObject) jsonArr.get(i);
-                if (((String) jobj.get("category")).equals("POP"))
+                if (((String) jobj.get("category")).equals("PTY"))
                     pop = (int) (long) jobj.get("fcstValue"); // JSON에서 ""로 감싸지지않은 값은 long 형이므로 casting 필수!
                 else if (((String) jobj.get("category")).equals("SKY"))
                     sky = (int) (long) jobj.get("fcstValue");
