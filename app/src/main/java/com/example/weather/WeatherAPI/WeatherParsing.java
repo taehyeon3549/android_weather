@@ -1,4 +1,4 @@
-package com.example.weather.WebConnection;
+package com.example.weather.WeatherAPI;
 
 import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
@@ -15,14 +15,36 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
-public class webconnection extends AsyncTask<Void, Void, Void>{
+public class WeatherParsing extends AsyncTask<Void, Void, Void>{
     String json;
     String address;
     BufferedReader br;
     URL url;
     HttpURLConnection conn;
     String protocol;
+
+    JSONArray resultArray;
+
+    String result;
+
+    private static WeatherParsing weatherParsing = new WeatherParsing();
+
+    private WeatherParsing(){
+
+    }
+
+    public static WeatherParsing getInstance(){
+        return weatherParsing;
+    }
+
+    public JSONArray getWeatherJSONArray(String getUrl){
+        this.execute();
+
+        return resultArray;
+    }
 
     @Override
     protected Void doInBackground(Void... voids) {
@@ -74,7 +96,8 @@ public class webconnection extends AsyncTask<Void, Void, Void>{
                     for(int i=0; i<jsonArray.length(); i++){
                         String category = jsonArray.getJSONObject(i).getString("category");
 
-                        // 날씨 형태
+                        result =  category;
+                        /*// 날씨 형태
                         if(category.equals("SKY")){
                             String SKY_Val = jsonArray.getJSONObject(i).getString("fcstValue");
                             Log.i("TEST", "\nBase 시간 : " + jsonArray.getJSONObject(i).getString("baseTime"));
@@ -102,7 +125,7 @@ public class webconnection extends AsyncTask<Void, Void, Void>{
                             }else if(PTY_Val.equals("3")) {
                                 Log.i("TEST", "눈");
                             }
-                        }
+                        }*/
                     }
 
                 } catch (JSONException e) {
@@ -121,7 +144,18 @@ public class webconnection extends AsyncTask<Void, Void, Void>{
     //백그라운드 작업이 시작 되기 전
     @Override
     protected void onPreExecute() {
-        address = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=ye3Vfiaa0XOU3HTyFOF9Cbn8x4X%2FLtWxwEm4DgIb6baeAHASEHo7zu49Yk2%2FqhIcpsSCl0fCV4%2FirHJ0asf2Og%3D%3D&base_date=20191216&base_time=1400&nx=87&ny=90&_type=json&pageNo=";
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyyMMdd");
+        SimpleDateFormat timeFormat = new SimpleDateFormat( "HHmm");
+
+        Calendar now = Calendar.getInstance();
+
+        String BaseDate = dateFormat.format(now.getTime());
+        String BaseTime = timeFormat.format(now.getTime());
+
+        Log.i("TEST", BaseDate);
+        Log.i("TEST", BaseTime);
+
+        address = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData?ServiceKey=ye3Vfiaa0XOU3HTyFOF9Cbn8x4X%2FLtWxwEm4DgIb6baeAHASEHo7zu49Yk2%2FqhIcpsSCl0fCV4%2FirHJ0asf2Og%3D%3D&base_date="+BaseDate+"&base_time="+BaseTime+"&nx=87&ny=90&_type=json&pageNo=";
         protocol = "GET";
 
         super.onPreExecute();
@@ -133,4 +167,18 @@ public class webconnection extends AsyncTask<Void, Void, Void>{
 
         super.onPostExecute(aVoid);
     }
+
+    private Calendar getLastBaseTime(Calendar calBase){
+        int t = calBase.get(Calendar.HOUR_OF_DAY);
+        if (t<2){
+            calBase.add(Calendar.DATE, -1);
+            calBase.set(Calendar.HOUR_OF_DAY,23);
+        }else{
+            calBase.set(Calendar.HOUR_OF_DAY, t-(t+1)%3);
+        }
+
+        return calBase;
+    }
+
+
 }
