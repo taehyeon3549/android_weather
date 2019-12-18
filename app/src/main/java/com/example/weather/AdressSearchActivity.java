@@ -55,7 +55,7 @@ public class AdressSearchActivity extends AppCompatActivity {
         // branch Test12121212
 
         //MASTER TEST
-
+        //123
         search = (Button) findViewById(R.id.searchBtn);
         resultLabel =(TextView) findViewById(R.id.textView);
 
