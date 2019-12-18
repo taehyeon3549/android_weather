@@ -48,9 +48,6 @@ public class AdressSearchActivity extends AppCompatActivity {
 
         //list = new ArrayList<String>(); //리스트 생성
 
-
-
-
         search = (Button) findViewById(R.id.searchBtn);
         resultLabel =(TextView) findViewById(R.id.textView);
 
