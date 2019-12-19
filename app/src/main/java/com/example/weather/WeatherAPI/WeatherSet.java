@@ -1,5 +1,11 @@
 package com.example.weather.WeatherAPI;
 
+import android.view.View;
+import android.widget.ImageView;
+
+import com.example.weather.MainActivity;
+import com.example.weather.R;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -82,5 +88,15 @@ public class WeatherSet {
 
     public void setSky(int s) {
         sky = s;
+    }
+
+    public void weatherIcon(MainActivity view){
+        ImageView iv_weather = (ImageView)view.findViewById(R.id.iv_weather);
+
+        if(this.getSky().equals("Error"))    iv_weather.setImageDrawable(view.getResources().getDrawable(R.drawable.na));
+        else if(this.getSky().equals("구름 조금")) iv_weather.setImageDrawable(view.getResources().getDrawable(R.drawable.little_cloudy));
+        else if(this.getSky().equals("구름 많음")) iv_weather.setImageDrawable(view.getResources().getDrawable(R.drawable.cloudy));
+        else if(this.getSky().equals("흐림")) iv_weather.setImageDrawable(view.getResources().getDrawable(R.drawable.many_cloudy));
+        else if(this.getSky().equals("맑음")) iv_weather.setImageDrawable(view.getResources().getDrawable(R.drawable.sunny));
     }
 }

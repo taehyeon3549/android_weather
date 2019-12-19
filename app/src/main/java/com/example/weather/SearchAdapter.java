@@ -63,6 +63,10 @@ public class SearchAdapter extends BaseAdapter {
         }else{
             viewHolder = (ViewHolder)convertView.getTag();
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> dcc1337b3e34f94737c375451bd83671c8fd069b
         // 리스트에 있는 데이터를 리스트뷰 셀에 뿌린다.
         viewHolder.label.setText(searchedLocations.get(position).getAddress()); //여기 에러 ArrayList의 값이 가져 오지 못한다.
 

@@ -105,7 +105,7 @@
         app:layout_constraintTop_toTopOf="@+id/gl_bottom3" />
 
     <Button
-        android:id="@+id/search"
+        android:id="@+id/bt_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="검색"

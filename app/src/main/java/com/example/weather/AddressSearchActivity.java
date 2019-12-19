@@ -2,34 +2,37 @@ package com.example.weather;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather.cLocation.cLocation;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+<<<<<<< HEAD:app/src/main/java/com/example/weather/AdressSearchActivity.java
 import android.view.ViewDebug;
 import android.widget.ArrayAdapter;
+=======
+import android.widget.AdapterView;
+>>>>>>> dcc1337b3e34f94737c375451bd83671c8fd069b:app/src/main/java/com/example/weather/AddressSearchActivity.java
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+<<<<<<< HEAD:app/src/main/java/com/example/weather/AdressSearchActivity.java
 import java.util.List;
 import java.util.Objects;
+=======
+>>>>>>> dcc1337b3e34f94737c375451bd83671c8fd069b:app/src/main/java/com/example/weather/AddressSearchActivity.java
 
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 
-public class AdressSearchActivity extends AppCompatActivity {
+public class AddressSearchActivity extends AppCompatActivity {
 
     private ListView listView;          // 검색을 보여줄 리스트변수
     private EditText editSearch;        // 검색어를 입력할 Input 창
@@ -62,11 +65,18 @@ public class AdressSearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("test", "버튼 클릭");
                 searchResult = settingList(editSearch.getText().toString());
-                adapter = new SearchAdapter(searchResult,AdressSearchActivity.this);
+                adapter = new SearchAdapter(searchResult, AddressSearchActivity.this);
                 listView.setAdapter(adapter) ;
             }
         });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("test", "위치 값은" + position);
+                Log.i("test", searchResult.get(position).getX() + searchResult.get(position).getY());
+            }
+        });
 
     }
 
