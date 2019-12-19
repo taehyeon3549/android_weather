@@ -92,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onResume() {
+        super.onResume();
 
         // sharedPreferens 확인
         SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
