@@ -8,12 +8,7 @@ import com.example.weather.cLocation.cLocation;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-<<<<<<< HEAD:app/src/main/java/com/example/weather/AdressSearchActivity.java
-import android.view.ViewDebug;
-import android.widget.ArrayAdapter;
-=======
 import android.widget.AdapterView;
->>>>>>> dcc1337b3e34f94737c375451bd83671c8fd069b:app/src/main/java/com/example/weather/AddressSearchActivity.java
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -22,11 +17,7 @@ import android.widget.ListView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-<<<<<<< HEAD:app/src/main/java/com/example/weather/AdressSearchActivity.java
-import java.util.List;
 import java.util.Objects;
-=======
->>>>>>> dcc1337b3e34f94737c375451bd83671c8fd069b:app/src/main/java/com/example/weather/AddressSearchActivity.java
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -51,14 +42,6 @@ public class AddressSearchActivity extends AppCompatActivity {
         editSearch = (EditText) findViewById(R.id.SearchText);
         listView = (ListView) findViewById(R.id.listView);
         searchBtn = (Button) findViewById(R.id.searchBtn);
-        int d =0;
-
-        if(listView.getSelectedItemPosition() != Objects){
-            d = listView.getSelectedItemPosition();
-        }
-
-
-        Log.d("test", searchResult.get(d).getAddress());
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
