@@ -1,13 +1,11 @@
 package com.example.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,8 +16,6 @@ import com.example.weather.WeatherAPI.LocationCodeFetcher;
 import com.example.weather.WeatherAPI.Pin;
 import com.example.weather.WeatherAPI.WeatherFetcher;
 import com.example.weather.WeatherAPI.WeatherSet;
-
-import org.apache.log4j.lf5.util.Resource;
 
 import java.text.SimpleDateFormat;
 
@@ -44,40 +40,46 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        String[] location = {"대구광역시", "달서구", "신당동"};
-
+        String[] location = {"대구광역시", "동구", "안심1동"};
         WeatherSet weather = null;
         LocationCodeFetcher lcf = new LocationCodeFetcher();
         WeatherFetcher wf = new WeatherFetcher();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
-
         pin = lcf.fetchLocationCode(location);
 
-        Log.i("TEST", "location code : " + pin.getSx() + ", " + pin.getSy());
-
+        //날씨 정보 생성
         try {
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
         }catch (Exception E){
             Log.i("TEST", E.toString());
         }
-
-
-        weatherIcon(weather);
+        // 아이콘 설정
+        weather.weatherIcon(this);
+        // TV 설정
         TextView tw_weather = (TextView)findViewById(R.id.tw_weather);
-        tw_weather.setText(sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+        tw_weather.setText(sdf.format(weather.getBaseDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
 
-//        Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
+        SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = alarmPreferences.edit();
+        editor.clear();
+        editor.commit();
+
+        Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
 //        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
     }
 
-    public void weatherIcon(WeatherSet weather){
-        ImageView iv_weather = (ImageView)findViewById(R.id.iv_weather);
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
 
-        if(weather.getSky().equals("Error"))    iv_weather.setImageDrawable(getResources().getDrawable(R.drawable.na));
-        else if(weather.getSky().equals("구름 조금")) iv_weather.setImageDrawable(getResources().getDrawable(R.drawable.little_cloudy));
-        else if(weather.getSky().equals("구름 많음")) iv_weather.setImageDrawable(getResources().getDrawable(R.drawable.cloudy));
-        else if(weather.getSky().equals("흐림")) iv_weather.setImageDrawable(getResources().getDrawable(R.drawable.many_cloudy));
-        else if(weather.getSky().equals("맑음")) iv_weather.setImageDrawable(getResources().getDrawable(R.drawable.sunny));
+        SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
+        // 알람 있는지 유무 체크
+        if(alarmPreferences.getAll().size() == 0) {
+            // 저장된 알람이 없음
+            Log.i("TEST", "저장된 알람 없음");
+        }else{
+            Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
+        }
 
     }
 }
