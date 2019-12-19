@@ -7,6 +7,7 @@ import com.example.weather.cLocation.cLocation;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -51,6 +52,13 @@ public class AddressSearchActivity extends AppCompatActivity {
             }
         });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.i("test", "위치 값은" + position);
+                Log.i("test", searchResult.get(position).getX() + searchResult.get(position).getY());
+            }
+        });
 
     }
 
