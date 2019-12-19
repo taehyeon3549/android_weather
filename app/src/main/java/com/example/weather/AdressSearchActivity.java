@@ -1,16 +1,20 @@
 package com.example.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.weather.cLocation.cLocation;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 
 import java.io.IOException;
@@ -24,14 +28,13 @@ import jxl.read.biff.BiffException;
 
 public class AdressSearchActivity extends AppCompatActivity {
 
-
-
     private ListView listView;          // 검색을 보여줄 리스트변수
     private EditText editSearch;        // 검색어를 입력할 Input 창
     private SearchAdapter adapter;      // 리스트뷰에 연결할 아답터
-
-    private TextView resultLabel;
     private Button searchBtn;
+    ArrayList<cLocation> searchResult;
+    public static final int sub = 1001; /*다른 액티비티를 띄우기 위한 요청코드(상수)*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,19 +43,21 @@ public class AdressSearchActivity extends AppCompatActivity {
         Log.d("test", "onCreate");
 
         editSearch = (EditText) findViewById(R.id.SearchText);
-        listView = (ListView) findViewById(R.id.ListView);
+        listView = (ListView) findViewById(R.id.listView);
         searchBtn = (Button) findViewById(R.id.searchBtn);
-        resultLabel =(TextView) findViewById(R.id.textView);
 
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<cLocation> searchResult = settingList(editSearch.getText().toString());
                 Log.d("test", "버튼 클릭");
-                resultLabel.setText(searchResult.get(1).getAddress());
+                searchResult = settingList(editSearch.getText().toString());
+                adapter = new SearchAdapter(searchResult,AdressSearchActivity.this);
+                listView.setAdapter(adapter) ;
             }
         });
+
+
     }
 
     private ArrayList<cLocation> settingList(String districtValue) {
@@ -74,17 +79,18 @@ public class AdressSearchActivity extends AppCompatActivity {
                     for (int row = rowIndexStart; row < rowTotal; row++) {
                         if (sheet.getCell(2, row).getContents().equals(districtValue) ) {
 
-
                             String address = sheet.getCell(0, row).getContents()+" "+sheet.getCell(1, row).getContents()+" "+sheet.getCell(2, row).getContents();
                             String x = sheet.getCell(3, row).getContents();
                             String y = sheet.getCell(4, row).getContents();
                             searchedList.add(new cLocation(address,x,y));
+
                             Log.d("test", address);
                         }
                     }
                     return searchedList;
                 }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("test", "1번 "+e.getMessage());

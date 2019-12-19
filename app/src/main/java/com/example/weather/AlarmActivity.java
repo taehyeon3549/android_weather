@@ -2,7 +2,9 @@ package com.example.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -38,6 +40,11 @@ public class AlarmActivity extends AppCompatActivity {
         time.setHour(12);
         time.setMinute(12);
 
+
+        Intent intent = getIntent(); /*데이터 수신*/
+        Log.d("test",intent.getExtras().getString("address"));
+        Log.d("test",intent.getExtras().getString("x"));
+        Log.d("test",intent.getExtras().getString("y"));
 
         rg_weather.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
