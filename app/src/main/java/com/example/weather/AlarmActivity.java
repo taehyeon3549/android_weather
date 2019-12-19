@@ -83,12 +83,6 @@ public class AlarmActivity extends AppCompatActivity {
             time.setCurrentMinute(pre_minute);
         }
 
-
-        Intent intent = getIntent(); /*데이터 수신*/
-        Log.d("test",intent.getExtras().getString("address"));
-        Log.d("test",intent.getExtras().getString("x"));
-        Log.d("test",intent.getExtras().getString("y"));
-
         rg_weather.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {

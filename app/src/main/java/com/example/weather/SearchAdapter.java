@@ -67,7 +67,7 @@ public class SearchAdapter extends BaseAdapter {
         viewHolder.label.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context.getApplicationContext(), AlarmActivity.class);
+                Intent intent = new Intent(context.getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
                 Toast.makeText(context, "선택: "+searchedLocations.get(pos).getAddress(), Toast.LENGTH_SHORT).show();
@@ -76,6 +76,8 @@ public class SearchAdapter extends BaseAdapter {
                 intent.putExtra("address",searchedLocations.get(pos).getAddress()); /*송신*/
                 intent.putExtra("x",searchedLocations.get(pos).getX());
                 intent.putExtra("y",searchedLocations.get(pos).getY());
+
+
                 context.startActivity(intent);
 
             }

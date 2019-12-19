@@ -17,11 +17,13 @@ import com.example.weather.WeatherAPI.Pin;
 import com.example.weather.WeatherAPI.WeatherFetcher;
 import com.example.weather.WeatherAPI.WeatherSet;
 
+import org.apache.log4j.chainsaw.Main;
+
 import java.text.SimpleDateFormat;
 
 public class MainActivity extends AppCompatActivity {
     Pin pin = null;
-    Button bt_setAlarm;
+    Button bt_setAlarm, bt_search;
     ImageView iv_weather;
 
     @Override
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bt_setAlarm = (Button)findViewById(R.id.bt_setAlarm);
+        bt_search = (Button)findViewById(R.id.bt_search);
 
         bt_setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,6 +40,15 @@ public class MainActivity extends AppCompatActivity {
                 Intent set_Alarm = new Intent(MainActivity.this, AlarmActivity.class);
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 startActivity(set_Alarm);
+            }
+        });
+
+        bt_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent set_locate = new Intent(MainActivity.this, AddressSearchActivity.class);
+                set_locate.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(set_locate);
             }
         });
 
@@ -66,12 +78,24 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
 //        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+//
+//        //주소 변경 부분
+//        Intent intent = getIntent(); /*데이터 수신*/
+//        try{
+//            Log.d("test",intent.getExtras().getString("address"));
+//            Log.d("test",intent.getExtras().getString("x"));
+//            Log.d("test",intent.getExtras().getString("y"));
+//        }catch (Exception E){
+//            Log.i("test", E.toString());
+//        }
+
     }
 
     @Override
     protected void onPostResume() {
         super.onPostResume();
 
+        // sharedPreferens 확인
         SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
         // 알람 있는지 유무 체크
         if(alarmPreferences.getAll().size() == 0) {
@@ -80,6 +104,23 @@ public class MainActivity extends AppCompatActivity {
         }else{
             Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
         }
+
+        //주소 변경 부분
+        Intent intent = getIntent(); /*데이터 수신*/
+        try{
+            Log.d("test",intent.getExtras().getString("address"));
+            Log.d("test",intent.getExtras().getString("x"));
+            Log.d("test",intent.getExtras().getString("y"));
+        }catch (Exception E){
+            Log.i("test", E.toString());
+        }
+//
+//        if(intent.hasExtra("address")){
+//
+//        }else{
+//            Log.i("test", "x y 변경값 없음");
+//        }
+
 
     }
 }
