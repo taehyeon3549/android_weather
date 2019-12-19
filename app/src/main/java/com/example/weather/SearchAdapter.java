@@ -63,24 +63,6 @@ public class SearchAdapter extends BaseAdapter {
         }else{
             viewHolder = (ViewHolder)convertView.getTag();
         }
-
-        viewHolder.label.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context.getApplicationContext(), AlarmActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-
-                Toast.makeText(context, "선택: "+searchedLocations.get(pos).getAddress(), Toast.LENGTH_SHORT).show();
-                Log.i("test",  searchedLocations.get(pos).getAddress());
-
-                intent.putExtra("address",searchedLocations.get(pos).getAddress()); /*송신*/
-                intent.putExtra("x",searchedLocations.get(pos).getX());
-                intent.putExtra("y",searchedLocations.get(pos).getY());
-                context.startActivity(intent);
-
-            }
-        });
-
         // 리스트에 있는 데이터를 리스트뷰 셀에 뿌린다.
         viewHolder.label.setText(searchedLocations.get(position).getAddress()); //여기 에러 ArrayList의 값이 가져 오지 못한다.
 

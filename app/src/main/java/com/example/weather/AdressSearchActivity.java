@@ -1,5 +1,6 @@
 package com.example.weather;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewDebug;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -45,7 +48,14 @@ public class AdressSearchActivity extends AppCompatActivity {
         editSearch = (EditText) findViewById(R.id.SearchText);
         listView = (ListView) findViewById(R.id.listView);
         searchBtn = (Button) findViewById(R.id.searchBtn);
+        int d =0;
 
+        if(listView.getSelectedItemPosition() != Objects){
+            d = listView.getSelectedItemPosition();
+        }
+
+
+        Log.d("test", searchResult.get(d).getAddress());
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
