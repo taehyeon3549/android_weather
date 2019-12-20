@@ -25,11 +25,21 @@ public class MainActivity extends AppCompatActivity {
     Pin pin = null;
     Button bt_setAlarm, bt_search;
     ImageView iv_weather;
+    TextView tw_weather;
+    SimpleDateFormat sdf;
+    WeatherSet weather;
+    String[] location = {"대구광역시", "동구", "안심1동"};
+    LocationCodeFetcher lcf;
+    WeatherFetcher wf;
+    private int REQUEST_TEST = 1;
+    Intent ReciverIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.d("test","onCreate");
 
         bt_setAlarm = (Button)findViewById(R.id.bt_setAlarm);
         bt_search = (Button)findViewById(R.id.bt_search);
@@ -39,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent set_Alarm = new Intent(MainActivity.this, AlarmActivity.class);
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(set_Alarm);
+                startActivityForResult(set_Alarm, REQUEST_TEST);
             }
         });
 
@@ -52,11 +62,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        String[] location = {"대구광역시", "동구", "안심1동"};
-        WeatherSet weather = null;
-        LocationCodeFetcher lcf = new LocationCodeFetcher();
-        WeatherFetcher wf = new WeatherFetcher();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
+
+        weather = null;
+        lcf = new LocationCodeFetcher();
+        wf = new WeatherFetcher();
+        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
         pin = lcf.fetchLocationCode(location);
 
         //날씨 정보 생성
@@ -68,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         // 아이콘 설정
         weather.weatherIcon(this);
         // TV 설정
-        TextView tw_weather = (TextView)findViewById(R.id.tw_weather);
+        tw_weather = (TextView)findViewById(R.id.tw_weather);
         tw_weather.setText(sdf.format(weather.getBaseDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
 
         SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
@@ -77,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         editor.commit();
 
         Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
-//        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
-//
+        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+
 //        //주소 변경 부분
 //        Intent intent = getIntent(); /*데이터 수신*/
 //        try{
@@ -94,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        Log.d("test","onResume");
         // sharedPreferens 확인
         SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
         // 알람 있는지 유무 체크
@@ -105,22 +115,38 @@ public class MainActivity extends AppCompatActivity {
             Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
         }
 
-        //주소 변경 부분
-        Intent intent = getIntent(); /*데이터 수신*/
         try{
-            Log.d("test",intent.getExtras().getString("address"));
-            Log.d("test",intent.getExtras().getString("x"));
-            Log.d("test",intent.getExtras().getString("y"));
+            //주소 변경 부분
+            Log.d("test",ReciverIntent.getExtras().getString("address"));
+            Log.d("test",ReciverIntent.getExtras().getString("x"));
+            Log.d("test",ReciverIntent.getExtras().getString("y"));
+            location = ReciverIntent.getExtras().getString("address").split("\\s");
+            pin = lcf.fetchLocationCode(location);
+            pin.setSx(ReciverIntent.getExtras().getString("x"));
+            pin.setSy(ReciverIntent.getExtras().getString("y"));
+            weather = wf.fetchWeather(pin.getSx(), pin.getSy());
+            weather.weatherIcon(this);
+            tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+            //파써를 이용하여 메인화면에 값을 변경 파썬도 실행
         }catch (Exception E){
             Log.i("test", E.toString());
         }
+
 //
 //        if(intent.hasExtra("address")){
 //
 //        }else{
 //            Log.i("test", "x y 변경값 없음");
 //        }
+    }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ReciverIntent = data;
+        if (requestCode == REQUEST_TEST) {
+            if (resultCode == RESULT_OK) {
+            }
+        }
     }
 }

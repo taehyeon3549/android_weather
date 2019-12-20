@@ -27,7 +27,6 @@ public class AddressSearchActivity extends AppCompatActivity {
 
     private EditText addressSearch;        // 주소 입력창
     private ListView addressListView;      // 검색을 보여줄 리스트변수
-    private ListView defualtListView;      // 검색을 보여줄 리스트변수
 
     private SearchAdapter adapter;          // 리스트뷰에 연결할 아답터
     private ArrayList<cLocation> addressList;
@@ -41,7 +40,6 @@ public class AddressSearchActivity extends AppCompatActivity {
 
         addressSearch = (EditText) findViewById(R.id.addressSearch);
         addressListView = (ListView) findViewById(R.id.addressListView);
-        //defualtListView = (ListView) findViewById(R.id.defaultListView);
 
         addressList = settingList(); //검색에 사용할 주소목록을 저장한다.
 
@@ -67,12 +65,16 @@ public class AddressSearchActivity extends AppCompatActivity {
         addressListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("test","listView 리스너 클릭");
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("address",addressList.get(position).getAddress());
-                intent.putExtra("locationX",addressList.get(position).getX());
-                intent.putExtra("locationY",addressList.get(position).getY());
+                intent.putExtra("x",addressList.get(position).getX());
+                intent.putExtra("y",addressList.get(position).getY());
                 Toast.makeText(getApplicationContext(),"선택 : "+addressList.get(position).getAddress(),Toast.LENGTH_SHORT).show();
-                startActivity(intent);//액티비티 띄우기
+
+                //startActivityForResult(intent,0);//액티비티 띄우기
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });
@@ -97,15 +99,17 @@ public class AddressSearchActivity extends AppCompatActivity {
                     int rowTotal = sheet.getRows() - 1;
 
                     for (int row = rowIndexStart; row < rowTotal; row++) {
-                        cLocationAddress.append(sheet.getCell(0, row).getContents()+" ");
-                        cLocationAddress.append(sheet.getCell(1, row).getContents()+" ");
-                        cLocationAddress.append(sheet.getCell(2, row).getContents());
+                        if(!sheet.getCell(2, row).getContents().isEmpty()){
+                            cLocationAddress.append(sheet.getCell(0, row).getContents()+" ");
+                            cLocationAddress.append(sheet.getCell(1, row).getContents()+" ");
+                            cLocationAddress.append(sheet.getCell(2, row).getContents());
 
-                        cLocationX = sheet.getCell(3, row).getContents();
-                        cLocationY = sheet.getCell(4, row).getContents();
+                            cLocationX = sheet.getCell(3, row).getContents();
+                            cLocationY = sheet.getCell(4, row).getContents();
 
-                        searchedList.add(new cLocation( cLocationAddress.toString(),cLocationX,cLocationY));
-                        cLocationAddress.setLength(0);
+                            searchedList.add(new cLocation( cLocationAddress.toString(),cLocationX,cLocationY));
+                            cLocationAddress.setLength(0);
+                        }
                     }
                 }
                 return searchedList;
