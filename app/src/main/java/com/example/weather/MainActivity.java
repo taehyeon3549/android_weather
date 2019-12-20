@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -29,7 +30,9 @@ import com.example.weather.cLocation.ConvertLatLon;
 
 import org.apache.log4j.chainsaw.Main;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     Pin pin = null;
@@ -192,8 +195,29 @@ public class MainActivity extends AppCompatActivity {
                 xPin = convertLatLon.getX();
                 yPin = convertLatLon.getY();
 
+                /***  위도 경도를 주소로 변환 ***/
+                Geocoder geocoder = new Geocoder(MainActivity.this);
+                List<Address> list = null;
+
+                try {
+                    Log.i("TEST", "lat" + latitude + "lon" + longitude);
+
+                    list = geocoder.getFromLocation(latitude, longitude, 100);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.i("TEST", "변환 실패 : " + e.toString() );
+                }
+                if(list != null){
+                    if(list.size() == 0){
+                        displayLocation("해당되는 주소가 없습니다.");
+                    }else{
+                        Log.i("TEST", "위치 값은 \n" + list.get(0).getAddressLine(0));
+                        displayLocation(list.get(0).getAddressLine(0));
+                    }
+                }
+
                 /***  메인 액티비티의 Textview의 값을 변경 ***/
-                displayLocation("위도 : " + longitude + " 경도 : " + latitude + "X 값 : " + convertLatLon.getX() + " Y 값 :" + convertLatLon.getY() + " \n서비스 제공자" + provider);
+                //displayLocation("위도 : " + longitude + " 경도 : " + latitude + "X 값 : " + convertLatLon.getX() + " Y 값 :" + convertLatLon.getY() + " \n서비스 제공자" + provider);
 
                 Toast.makeText(MainActivity.this, "위도 : " + longitude + " 경도 : " + latitude + " \n서비스 제공자" + provider, Toast.LENGTH_LONG).show();
                 Log.i("TEST", "위도 : " + longitude + " 경도 : " + latitude + "X 값 : " + convertLatLon.getX() + " Y 값 :" + convertLatLon.getY() + " \n서비스 제공자" + provider);
