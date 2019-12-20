@@ -4,44 +4,47 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
+    tools:context=".AddressSearchActivity">
 
     <EditText
-        android:id="@+id/SearchText"
-        android:layout_width="267dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="23dp"
-        android:layout_marginEnd="169dp"
+        android:id="@+id/addressSearch"
+        android:layout_width="334dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="36dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="신당동"
+        android:text="입력"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.07" />
-
-    <Button
-        android:id="@+id/searchBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="검색"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toEndOf="@+id/SearchText"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintVertical_bias="0.069" />
 
     <ListView
-        android:id="@+id/listView"
-        android:layout_width="343dp"
-        android:layout_height="546dp"
-        android:layout_marginTop="120dp"
+        android:id="@+id/addressListView"
+        android:layout_width="327dp"
+        android:layout_height="458dp"
+        android:layout_marginTop="164dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.448"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="334dp"
+        android:layout_height="45dp"
+        android:text="TextView"
+        android:textSize="20dp"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="5dp"
+        android:textColor="#000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.023" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

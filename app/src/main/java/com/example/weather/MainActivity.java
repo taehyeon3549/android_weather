@@ -38,7 +38,14 @@ public class MainActivity extends AppCompatActivity {
     Pin pin = null;
     Button bt_setAlarm, bt_search;
     ImageView iv_weather;
-    TextView tv_location;
+    TextView tv_location, tw_weather;
+    SimpleDateFormat sdf;
+    WeatherSet weather;
+    String[] location = {"대구광역시", "동구", "안심1동"};
+    LocationCodeFetcher lcf;
+    WeatherFetcher wf;
+    private int REQUEST_TEST = 1;
+    Intent ReceivedIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         bt_setAlarm = (Button) findViewById(R.id.bt_setAlarm);
         bt_search = (Button) findViewById(R.id.bt_search);
         tv_location = (TextView)findViewById(R.id.tv_location);
+
 
         bt_setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,13 +71,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent set_locate = new Intent(MainActivity.this, AddressSearchActivity.class);
                 set_locate.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(set_locate);
+
+                startActivityForResult(set_locate, REQUEST_TEST);
             }
         });
 
+
         /***  지역 위치 설정 ***/
-        String[] location = {"서울특별시", "종로구", "청운효자동"};
-        LocationCodeFetcher lcf = new LocationCodeFetcher();
+        weather = null;
+        lcf = new LocationCodeFetcher();
+        wf = new WeatherFetcher();
+        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
         pin = lcf.fetchLocationCode(location);
 
         /***  출력 설정 ***/
@@ -88,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         /***  날씨 아이콘 설정 ***/
         weather.weatherIcon(this);
         // TV 설정
-        TextView tw_weather = (TextView) findViewById(R.id.tw_weather);
+        tw_weather = (TextView)findViewById(R.id.tw_weather);
         tw_weather.setText(sdf.format(weather.getBaseDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
 
         SharedPreferences alarmPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -99,12 +111,15 @@ public class MainActivity extends AppCompatActivity {
         /***  위치값 가져오기 ***/
         GetLocation mylocation = new GetLocation();
         mylocation.StartGetLocation(this);
+
+        Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
+        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
 
         /***  sharedPreferens 확인 ***/
         SharedPreferences alarmPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -117,15 +132,36 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /***  주소 변경 부분 ***/
-        Intent intent = getIntent();
-        if(intent.hasExtra("address")){
-            Log.d("test", intent.getExtras().getString("address"));
-            Log.d("test", intent.getExtras().getString("x"));
-            Log.d("test", intent.getExtras().getString("y"));
-        }else{
-            Log.i("test", "x y 변경값 없음");
-        }
+        try{
+            Log.d("test",ReceivedIntent.getExtras().getString("address"));
+            Log.d("test",ReceivedIntent.getExtras().getString("x"));
+            Log.d("test",ReceivedIntent.getExtras().getString("y"));
 
+            location = ReceivedIntent.getExtras().getString("address").split("\\s");
+            pin = lcf.fetchLocationCode(location);
+            pin.setSx(ReceivedIntent.getExtras().getString("x"));
+            pin.setSy(ReceivedIntent.getExtras().getString("y"));
+            weather = wf.fetchWeather(pin.getSx(), pin.getSy());
+
+            //파써를 이용하여 메인화면에 값을 변경 파썬도 실행
+        }catch (Exception E){
+            Log.i("test", E.toString());
+        }
+        weather.weatherIcon(this);
+        tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+        Log.i("test", "x y 변경값 없음");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1){
+            if (resultCode == AddressSearchActivity.RESULT_OK){
+                Log.e("test", "결과 받기 성공");
+                ReceivedIntent=data;
+            }
+        }
     }
 
     /***************************************
@@ -153,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
                 //    Activity#requestPermissions
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,1000,1, mLocationListener);
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,1000,1, mLocationListener);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, mLocationListener);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, mLocationListener);
             }
         }
 
@@ -187,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
                 provider = location.getProvider();
 
                 /***  위도 경도를 x,y로 변환 ***/
-                ConvertLatLon convertLatLon = new ConvertLatLon((float)longitude, (float)latitude);
+                ConvertLatLon convertLatLon = new ConvertLatLon((float) longitude, (float) latitude);
 
                 xPin = convertLatLon.getX();
                 yPin = convertLatLon.getY();
@@ -202,12 +238,12 @@ public class MainActivity extends AppCompatActivity {
                     list = geocoder.getFromLocation(latitude, longitude, 100);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.i("TEST", "변환 실패 : " + e.toString() );
+                    Log.i("TEST", "변환 실패 : " + e.toString());
                 }
-                if(list != null){
-                    if(list.size() == 0){
+                if (list != null) {
+                    if (list.size() == 0) {
                         displayLocation("해당되는 주소가 없습니다.");
-                    }else{
+                    } else {
                         Log.i("TEST", "위치 값은 \n" + list.get(0).getAddressLine(0));
                         displayLocation("현재위치 : \n" + list.get(0).getAddressLine(0));
                     }
@@ -236,6 +272,4 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-
-
 }
