@@ -68,16 +68,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /***  지역 위치 설정 ***/
-        String[] location = {"대구광역시", "동구", "안심1동"};
-        WeatherSet weather = null;
+        String[] location = {"서울특별시", "종로구", "청운효자동"};
         LocationCodeFetcher lcf = new LocationCodeFetcher();
-        WeatherFetcher wf = new WeatherFetcher();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
         pin = lcf.fetchLocationCode(location);
 
+        /***  출력 설정 ***/
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
+
         /***  날씨 정보 생성 ***/
+        WeatherFetcher wf = new WeatherFetcher();
+        WeatherSet weather = null;
         try {
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
+            Log.i("TEST", "청운 효자동 x y 출력" + pin.getSx() + ", " +  pin.getSy());
         } catch (Exception E) {
             Log.i("TEST", "날씨 정보 파싱 에러 : " + E.toString());
         }
@@ -96,12 +99,6 @@ public class MainActivity extends AppCompatActivity {
         /***  위치값 가져오기 ***/
         GetLocation mylocation = new GetLocation();
         mylocation.StartGetLocation(this);
-
-        //Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
-//        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
-//
-
-
     }
 
     @Override
@@ -212,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                         displayLocation("해당되는 주소가 없습니다.");
                     }else{
                         Log.i("TEST", "위치 값은 \n" + list.get(0).getAddressLine(0));
-                        displayLocation(list.get(0).getAddressLine(0));
+                        displayLocation("현재위치 : \n" + list.get(0).getAddressLine(0));
                     }
                 }
 
