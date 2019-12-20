@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     LocationCodeFetcher lcf;
     WeatherFetcher wf;
     private int REQUEST_TEST = 1;
-    Intent ReciverIntent;
+    Intent ReceivedIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent set_Alarm = new Intent(MainActivity.this, AlarmActivity.class);
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivityForResult(set_Alarm, REQUEST_TEST);
+                startActivity(set_Alarm);
             }
         });
 
@@ -58,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent set_locate = new Intent(MainActivity.this, AddressSearchActivity.class);
                 set_locate.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(set_locate);
+
+                startActivityForResult(set_locate, REQUEST_TEST);
             }
         });
-
 
         weather = null;
         lcf = new LocationCodeFetcher();
@@ -88,17 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
         Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
-
-//        //주소 변경 부분
-//        Intent intent = getIntent(); /*데이터 수신*/
-//        try{
-//            Log.d("test",intent.getExtras().getString("address"));
-//            Log.d("test",intent.getExtras().getString("x"));
-//            Log.d("test",intent.getExtras().getString("y"));
-//        }catch (Exception E){
-//            Log.i("test", E.toString());
-//        }
-
     }
 
     @Override
@@ -115,37 +104,35 @@ public class MainActivity extends AppCompatActivity {
             Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
         }
 
+
+
         try{
             //주소 변경 부분
-            Log.d("test",ReciverIntent.getExtras().getString("address"));
-            Log.d("test",ReciverIntent.getExtras().getString("x"));
-            Log.d("test",ReciverIntent.getExtras().getString("y"));
-            location = ReciverIntent.getExtras().getString("address").split("\\s");
+            Log.d("test",ReceivedIntent.getExtras().getString("address"));
+            Log.d("test",ReceivedIntent.getExtras().getString("x"));
+            Log.d("test",ReceivedIntent.getExtras().getString("y"));
+            location = ReceivedIntent.getExtras().getString("address").split("\\s");
             pin = lcf.fetchLocationCode(location);
-            pin.setSx(ReciverIntent.getExtras().getString("x"));
-            pin.setSy(ReciverIntent.getExtras().getString("y"));
+            pin.setSx(ReceivedIntent.getExtras().getString("x"));
+            pin.setSy(ReceivedIntent.getExtras().getString("y"));
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
-            weather.weatherIcon(this);
-            tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+
             //파써를 이용하여 메인화면에 값을 변경 파썬도 실행
         }catch (Exception E){
             Log.i("test", E.toString());
         }
-
-//
-//        if(intent.hasExtra("address")){
-//
-//        }else{
-//            Log.i("test", "x y 변경값 없음");
-//        }
+        weather.weatherIcon(this);
+        tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ReciverIntent = data;
-        if (requestCode == REQUEST_TEST) {
-            if (resultCode == RESULT_OK) {
+
+        if(requestCode == 1){
+            if (resultCode == AddressSearchActivity.RESULT_OK){
+                Log.e("test", "결과 받기 성공");
+                ReceivedIntent=data;
             }
         }
     }

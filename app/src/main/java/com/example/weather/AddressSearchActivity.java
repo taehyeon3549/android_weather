@@ -107,7 +107,10 @@ public class AddressSearchActivity extends AppCompatActivity {
                             cLocationX = sheet.getCell(3, row).getContents();
                             cLocationY = sheet.getCell(4, row).getContents();
 
+
+
                             searchedList.add(new cLocation( cLocationAddress.toString(),cLocationX,cLocationY));
+                            //Log.d("test",cLocationAddress.toString()+cLocationX+cLocationY);
                             cLocationAddress.setLength(0);
                         }
                     }
