@@ -84,12 +84,6 @@ public class MainActivity extends AppCompatActivity {
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
         pin = lcf.fetchLocationCode(location);
 
-        /***  출력 설정 ***/
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
-
-        /***  날씨 정보 생성 ***/
-        WeatherFetcher wf = new WeatherFetcher();
-        WeatherSet weather = null;
         try {
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
             Log.i("TEST", "청운 효자동 x y 출력" + pin.getSx() + ", " +  pin.getSy());
@@ -147,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         }catch (Exception E){
             Log.i("test", E.toString());
         }
-        weather.weatherIcon(this);
+        weather.weatherIcon(MainActivity.this);
         tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
         Log.i("test", "x y 변경값 없음");
     }
