@@ -28,7 +28,7 @@ public class AlarmData {
         return alarm_state;
     }
 
-    public void set_time(int hour, int min){
+    public void set_time(String hour, String min){
         time = hour + " : " + min;
     }
 

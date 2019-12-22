@@ -35,4 +35,10 @@ dependencies {
     implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
+    /*************************************************************************
+     * Swip Layout
+     * https://kmshack.github.io/AndroidUICollection/2018/10/25/SwipeLayout/
+     *************************************************************************/
+    implementation 'ru.rambler.android:swipe-layout:1.0.17'
 }

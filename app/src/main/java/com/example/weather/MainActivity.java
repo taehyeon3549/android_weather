@@ -1,9 +1,13 @@
 package com.example.weather;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,12 +20,17 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.weather.Alarm.AlarmData;
 import com.example.weather.WeatherAPI.LocationCodeFetcher;
 import com.example.weather.WeatherAPI.Pin;
 import com.example.weather.WeatherAPI.WeatherFetcher;
@@ -32,7 +41,12 @@ import org.apache.log4j.chainsaw.Main;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
+import ru.rambler.libs.swipe_layout.SwipeLayout;
 
 public class MainActivity extends AppCompatActivity {
     Pin pin = null;
@@ -46,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     WeatherFetcher wf;
     private int REQUEST_TEST = 1;
     Intent ReceivedIntent;
+
+    Adapter adapter;
+    RecyclerView recycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +92,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(set_locate, REQUEST_TEST);
             }
         });
+
+        /** SwipView 알람 기록 **/
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        adapter = new Adapter();
+        recycler = findViewById(R.id.recyclerView);
+        recycler.setLayoutManager(manager);
+        recycler.setAdapter(adapter);
+
 
 
         /***  지역 위치 설정 ***/
@@ -114,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         /***  sharedPreferens 확인 ***/
         SharedPreferences alarmPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         /***  알람 있는지 유무 체크 ***/
@@ -122,7 +146,14 @@ public class MainActivity extends AppCompatActivity {
             // 저장된 알람이 없음
             Log.i("TEST", "저장된 알람 없음");
         } else {
+            /** RecycleView 어뎁터 재설정 **/
+            adapter.setAdapter(alarmPreferences);
+
+            recycler.removeAllViews();
+            recycler.setAdapter(adapter);
+
             Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
+
         }
 
         /***  주소 변경 부분 ***/
@@ -144,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
         weather.weatherIcon(MainActivity.this);
         tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
         Log.i("test", "x y 변경값 없음");
+
     }
 
     @Override
@@ -154,6 +186,156 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == AddressSearchActivity.RESULT_OK){
                 Log.e("test", "결과 받기 성공");
                 ReceivedIntent=data;
+            }
+        }
+    }
+
+    /***************************************
+     *  SwipView Adapter
+     * **************************************/
+    private static class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+
+        private int count = 0;           //세팅 갯수
+        private  int[] itemsOffset = new int[count];
+        private HashMap<Integer, AlarmData> alarmDataHashMap = new HashMap<>();
+        AlarmData alarmData;
+
+        public void setAdapter(SharedPreferences sharedPreferences){
+            count = sharedPreferences.getAll().size();
+            itemsOffset = new int[count];
+
+            for(int i = 0; i<count; i++){
+                String value = sharedPreferences.getString("alarm", "");
+                try{
+                    String[] array = value.split("/");
+                    String[] time = array[1].split(":");
+
+                    alarmData = new AlarmData(null,array[2],Boolean.TRUE);
+                    alarmData.set_time(time[0], time[1]);
+
+                    alarmDataHashMap.put(count - 1, alarmData);
+
+                }catch (Exception E){
+                    Log.i("TEST", "sharedPreferences 값 못 가져옴 " + E.toString());
+                }
+            }
+
+        }
+        @Override
+        public int getItemViewType(int position) {
+            return position % 3;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            int layoutId;
+            layoutId = R.layout.list_item_left_right;
+            /*
+            switch (viewType) {
+                case 0:
+                    layoutId = R.layout.list_item_left_right;
+                    break;
+
+                case 1:
+                    layoutId = R.layout.list_item_left;
+                    break;
+
+                case 2:
+                    layoutId = R.layout.list_item_right;
+                    break;
+
+                default:
+                    throw new IllegalArgumentException();
+            }
+            */
+
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+            final ViewHolder viewHolder = new ViewHolder(itemView);
+
+            /** textview 삽입 **/
+            viewHolder.time.setText(alarmDataHashMap.get(0).get_weather());
+
+            View.OnClickListener onClick = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    viewHolder.swipeLayout.animateReset();
+                }
+            };
+
+            if (viewHolder.leftView != null) {
+                viewHolder.leftView.setClickable(true);
+                viewHolder.leftView.setOnClickListener(onClick);
+            }
+
+            if (viewHolder.rightView != null) {
+                viewHolder.rightView.setClickable(true);
+                viewHolder.rightView.setOnClickListener(onClick);
+            }
+
+            viewHolder.swipeLayout.setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
+                @Override
+                public void onBeginSwipe(SwipeLayout swipeLayout, boolean moveToRight) {
+                }
+
+                @Override
+                public void onSwipeClampReached(SwipeLayout swipeLayout, boolean moveToRight) {
+                    /** 슬라이드 후 Toast 텍스트 출력 부분 **/
+                    // 오른쪽으로 움직였는지 확인 또는 아님
+                    Toast.makeText(swipeLayout.getContext(),
+                            (moveToRight ? "Left" : "Right") + " 움직였네유",
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
+
+                @Override
+                public void onLeftStickyEdge(SwipeLayout swipeLayout, boolean moveToRight) {
+                }
+
+                @Override
+                public void onRightStickyEdge(SwipeLayout swipeLayout, boolean moveToRight) {
+                }
+            });
+
+            return new ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            holder.swipeLayout.setOffset(itemsOffset[position]);
+        }
+
+        @Override
+        public void onViewDetachedFromWindow(ViewHolder holder) {
+            if (holder.getAdapterPosition() != RecyclerView.NO_POSITION) {
+                itemsOffset[holder.getAdapterPosition()] = holder.swipeLayout.getOffset();
+            }
+        }
+
+        @Override
+        public void onViewRecycled(ViewHolder holder) {
+            super.onViewRecycled(holder);
+        }
+
+        @Override
+        public int getItemCount() {
+            return count;
+        }
+
+        static class ViewHolder extends RecyclerView.ViewHolder {
+
+            private final SwipeLayout swipeLayout;
+            private final View rightView;
+            private final View leftView;
+
+            TextView time;
+
+            ViewHolder(View itemView) {
+                super(itemView);
+                swipeLayout = itemView.findViewById(R.id.swipe_layout);
+                rightView = itemView.findViewById(R.id.right_view);
+                leftView = itemView.findViewById(R.id.left_view);
+
+                time = itemView.findViewById(R.id.tvTime);
             }
         }
     }
@@ -208,6 +390,7 @@ public class MainActivity extends AppCompatActivity {
             return provider;
         }
 
+        /***  LocationMagnager 리스너 ***/
         private final LocationListener mLocationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {

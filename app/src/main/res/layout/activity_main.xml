@@ -94,13 +94,17 @@
         app:layout_constraintVertical_bias="0.97" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="320dp"
-        android:layout_height="315dp"
+        android:id="@+id/recyclerView"
+        android:layout_width="325dp"
+        android:layout_height="208dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="60dp"
         android:scrollbars="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/bt_setAlarm"
         app:layout_constraintEnd_toStartOf="@+id/gl_left"
+        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="@+id/gl_right"
-        app:layout_constraintTop_toTopOf="@+id/gl_bottom3" />
+        app:layout_constraintTop_toBottomOf="@+id/tw_weather" />
 
     <Button
         android:id="@+id/bt_search"

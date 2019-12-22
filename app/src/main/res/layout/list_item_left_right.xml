@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ru.rambler.libs.swipe_layout.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_layout"
+    style="@style/SwipeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_height">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/center_bg">
+
+        <TextView
+            android:id="@+id/tvTime"
+            style="@style/TimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="20 : 12" />
+
+        <TextView
+            android:id="@+id/tvWeather"
+            style="@style/CenterTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text=" 비" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            style="@style/LocationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text=" 대구광역시 달서구 신당동" />
+
+        <Switch
+            android:id="@+id/AlarmSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+             />
+
+    </LinearLayout>
+
+    <!--RIGHT-->
+    <LinearLayout
+        android:id="@+id/right_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/right_bg"
+        android:orientation="horizontal"
+        app:bring_to_clamp="150dp"
+        app:clamp="self"
+        app:gravity="right"
+        app:sticky="100dp">
+
+        <TextView
+            style="@style/RightTextView"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:background="#1000"
+            android:text="삭제" />
+
+        <TextView
+            style="@style/RightTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="삭제합니다ㅏㅏㅏㅏㅏ" />
+
+    </LinearLayout>
+
+    <!--LEFT-->
+    <FrameLayout
+        android:id="@+id/left_view"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:background="@color/left_bg"
+        app:bring_to_clamp="100dp"
+        app:clamp="self"
+        app:gravity="left"
+        app:sticky="none">
+
+        <TextView
+            style="@style/LeftTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="수정" />
+    </FrameLayout>
+</ru.rambler.libs.swipe_layout.SwipeLayout>
