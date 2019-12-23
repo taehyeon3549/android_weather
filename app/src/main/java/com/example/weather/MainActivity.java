@@ -25,8 +25,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +53,6 @@ import ru.rambler.libs.swipe_layout.SwipeLayout;
 public class MainActivity extends AppCompatActivity {
     Pin pin = null;
     Button bt_setAlarm, bt_search;
-    ImageView iv_weather;
     TextView tv_location, tw_weather;
     SimpleDateFormat sdf;
     WeatherSet weather;
@@ -60,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     WeatherFetcher wf;
     private int REQUEST_TEST = 1;
     Intent ReceivedIntent;
-
     Adapter adapter;
     RecyclerView recycler;
 
@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         bt_setAlarm = (Button) findViewById(R.id.bt_setAlarm);
         bt_search = (Button) findViewById(R.id.bt_search);
         tv_location = (TextView)findViewById(R.id.tv_location);
-
 
         bt_setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
         /** SwipView 알람 기록 **/
         LinearLayoutManager manager = new LinearLayoutManager(this);
         adapter = new Adapter();
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
-            Log.i("TEST", "청운 효자동 x y 출력" + pin.getSx() + ", " +  pin.getSy());
+            //Log.i("TEST", "청운 효자동 x y 출력" + pin.getSx() + ", " +  pin.getSy());
         } catch (Exception E) {
             Log.i("TEST", "날씨 정보 파싱 에러 : " + E.toString());
         }
@@ -131,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
         GetLocation mylocation = new GetLocation();
         mylocation.StartGetLocation(this);
 
-        Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
-        Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+        //Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
+        //Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
 
     }
 
@@ -148,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             /** RecycleView 어뎁터 재설정 **/
             adapter.setAdapter(alarmPreferences);
-
             recycler.removeAllViews();
             recycler.setAdapter(adapter);
 
@@ -158,9 +158,9 @@ public class MainActivity extends AppCompatActivity {
 
         /***  주소 변경 부분 ***/
         try{
-            Log.d("test",ReceivedIntent.getExtras().getString("address"));
-            Log.d("test",ReceivedIntent.getExtras().getString("x"));
-            Log.d("test",ReceivedIntent.getExtras().getString("y"));
+            //Log.d("test",ReceivedIntent.getExtras().getString("address"));
+            //Log.d("test",ReceivedIntent.getExtras().getString("x"));
+            //Log.d("test",ReceivedIntent.getExtras().getString("y"));
 
             location = ReceivedIntent.getExtras().getString("address").split("\\s");
             pin = lcf.fetchLocationCode(location);
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         }
         weather.weatherIcon(MainActivity.this);
         tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
-        Log.i("test", "x y 변경값 없음");
+        //Log.i("test", "x y 변경값 없음");
 
     }
 
@@ -205,20 +205,20 @@ public class MainActivity extends AppCompatActivity {
         public void setAdapter(SharedPreferences sharedPreferences){
             getShared = sharedPreferences;
             count = getShared.getAll().size();
-            Log.i("TEST", "갯수 : " + String.valueOf(count));
+            //Log.i("TEST", "갯수 : " + String.valueOf(count));
 
             itemsOffset = new int[count];
 
             for(int i = 0; i<count; i++){
                 String searchTag = "alarm"+(i+1);
-                Log.i("TEST", searchTag);
+                //Log.i("TEST", searchTag);
                 String value = getShared.getString(searchTag, "");
-                Log.i("TEST", "꺼내온 값은 : " + value);
+                //Log.i("TEST", "꺼내온 값은 : " + value);
                 try{
                     String[] anyweather = value.split("/");
                     String[] anytime = anyweather[0].split(":");
-                    Log.i("TEST", "anyweather " + anyweather[0] + " 그리고 " + anyweather[1]);
-                    Log.i("TEST", "anytime " + anytime[0] + " 그리고 " + anytime[1]);
+                    //Log.i("TEST", "anyweather " + anyweather[0] + " 그리고 " + anyweather[1]);
+                    //Log.i("TEST", "anytime " + anytime[0] + " 그리고 " + anytime[1]);
 
                     try{
                         alarmData = new AlarmData(null,anyweather[1],Boolean.TRUE);
@@ -313,6 +313,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            /** 스위치 Onchanged 이벤트 **/
+            viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if(isChecked == true){
+                        Log.i("TEST", "switch 버튼 TRUE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
+                    }else{
+                        Log.i("TEST", "switch 버튼 FALSE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
+                    }
+                }
+            });
+
             return new ViewHolder(itemView);
         }
 
@@ -346,6 +358,7 @@ public class MainActivity extends AppCompatActivity {
 
             TextView time;
             TextView weather;
+            Switch alarmSwitch;
 
             ViewHolder(View itemView) {
                 super(itemView);
@@ -355,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
 
                 time = itemView.findViewById(R.id.tvTime);
                 weather = itemView.findViewById(R.id.tvWeather);
+                alarmSwitch = itemView.findViewById(R.id.AlarmSwitch);
             }
         }
     }

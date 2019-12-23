@@ -37,7 +37,7 @@ public class AlarmActivity extends AppCompatActivity {
     RadioButton rb_fine, rb_rain, rb_cloud, rb_snow;
     TimePicker time;
 
-    String checked_weather = "fine";
+    String checked_weather = "맑음";
     int tp_hour = 12;
     int tp_min = 12;
 
@@ -87,13 +87,13 @@ public class AlarmActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.rb_fine)
-                    checked_weather = "fine";
+                    checked_weather = "맑음";
                 else if(checkedId == R.id.rb_cloud)
-                    checked_weather = "cloud";
+                    checked_weather = "흐림";
                 else if(checkedId == R.id.rb_rain)
-                    checked_weather = "rain";
+                    checked_weather = "비";
                 else if(checkedId == R.id.rb_snow)
-                    checked_weather = "snow";
+                    checked_weather = "눈";
             }
         });
 
@@ -108,8 +108,7 @@ public class AlarmActivity extends AppCompatActivity {
         bt_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int hour, hour_24, minute;
-                String am_pm;
+                int hour_24, minute;
 
                 if (Build.VERSION.SDK_INT >= 23 ){
                     hour_24 = time.getHour();
@@ -128,8 +127,8 @@ public class AlarmActivity extends AppCompatActivity {
                 calendar.set(Calendar.SECOND, 0);
 
                 Date currentDateTime = calendar.getTime();
-                String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분 ", Locale.getDefault()).format(currentDateTime);
-                Toast.makeText(getApplicationContext(),date_text + "으로 알람이 설정되었습니다!", Toast.LENGTH_SHORT).show();
+                String date_text = new SimpleDateFormat("HH시 mm분 ", Locale.getDefault()).format(currentDateTime);
+                Toast.makeText(getApplicationContext(),checked_weather + "날씨 알람을 " + date_text + "에 울리게 설정되었습니다!", Toast.LENGTH_SHORT).show();
 
                 //  Preference에 설정한 값 저장
                 SharedPreferences.Editor editor = getSharedPreferences("daily alarm", MODE_PRIVATE).edit();
@@ -171,7 +170,11 @@ public class AlarmActivity extends AppCompatActivity {
         ComponentName receiver = new ComponentName(this, DeviceBootReceiver.class);
         Intent alarmIntent = new Intent(this, AlarmReceiver.class);
 
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        /** 선택한 날씨 정보 Intent로 넘김 **/
+        /** PendingIntent 의 4번째 파라미터는 Flag로 이미 실행 중인 알람이 있다면 extra Data만 교체함 **/
+        alarmIntent.putExtra("weather", checked_weather);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         /** 사용자가 매일 알람을 허용했다면 **/
