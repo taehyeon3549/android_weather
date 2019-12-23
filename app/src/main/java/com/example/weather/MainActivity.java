@@ -200,19 +200,34 @@ public class MainActivity extends AppCompatActivity {
         private HashMap<Integer, AlarmData> alarmDataHashMap = new HashMap<>();
         AlarmData alarmData;
 
+        SharedPreferences getShared;
+
         public void setAdapter(SharedPreferences sharedPreferences){
-            count = sharedPreferences.getAll().size();
+            getShared = sharedPreferences;
+            count = getShared.getAll().size();
+            Log.i("TEST", "갯수 : " + String.valueOf(count));
+
             itemsOffset = new int[count];
 
             for(int i = 0; i<count; i++){
-                String value = sharedPreferences.getString("alarm", "");
+                String searchTag = "alarm"+(i+1);
+                Log.i("TEST", searchTag);
+                String value = getShared.getString(searchTag, "");
+                Log.i("TEST", "꺼내온 값은 : " + value);
                 try{
-                    String[] array = value.split("/");
-                    String[] time = array[1].split(":");
+                    String[] anyweather = value.split("/");
+                    String[] anytime = anyweather[0].split(":");
+                    Log.i("TEST", "anyweather " + anyweather[0] + " 그리고 " + anyweather[1]);
+                    Log.i("TEST", "anytime " + anytime[0] + " 그리고 " + anytime[1]);
 
-                    alarmData = new AlarmData(null,array[2],Boolean.TRUE);
-                    alarmData.set_time(time[0], time[1]);
+                    try{
+                        alarmData = new AlarmData(null,anyweather[1],Boolean.TRUE);
+                    }
+                    catch (Exception E){
+                        Log.i("TEST", "생성이 글러머금" + E.toString());
+                    }
 
+                    alarmData.set_time(anytime[0], anytime[1]);
                     alarmDataHashMap.put(count - 1, alarmData);
 
                 }catch (Exception E){
@@ -227,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int index) {
             int layoutId;
             layoutId = R.layout.list_item_left_right;
             /*
@@ -252,8 +267,10 @@ public class MainActivity extends AppCompatActivity {
             View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
             final ViewHolder viewHolder = new ViewHolder(itemView);
 
-            /** textview 삽입 **/
-            viewHolder.time.setText(alarmDataHashMap.get(0).get_weather());
+            /** textview 삽입 ( 해당 row index는 viewType으로 구분) **/
+            viewHolder.weather.setText(alarmDataHashMap.get(index).get_weather());
+            viewHolder.time.setText(alarmDataHashMap.get(index).get_time());
+
 
             View.OnClickListener onClick = new View.OnClickListener() {
                 @Override
@@ -328,6 +345,7 @@ public class MainActivity extends AppCompatActivity {
             private final View leftView;
 
             TextView time;
+            TextView weather;
 
             ViewHolder(View itemView) {
                 super(itemView);
@@ -336,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
                 leftView = itemView.findViewById(R.id.left_view);
 
                 time = itemView.findViewById(R.id.tvTime);
+                weather = itemView.findViewById(R.id.tvWeather);
             }
         }
     }

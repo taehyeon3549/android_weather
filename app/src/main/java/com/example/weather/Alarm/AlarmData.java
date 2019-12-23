@@ -13,7 +13,8 @@ public class AlarmData {
     public AlarmData(Calendar calendar, String weather, Boolean alarm_state){
         this.weather = weather;
         this.alarm_state = alarm_state;
-        this.time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(calendar.getTime());
+        if(calendar != null)
+            this.time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(calendar.getTime());
     }
 
     public String get_time(){
