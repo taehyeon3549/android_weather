@@ -26,6 +26,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        /*************************************************************
+         * 문제: receive를 받았을때 오늘의 날씨와 알람 설정한 날씨가
+         * 같은지 확인을 하고 같다면 notiy 출력 아니면 패스
+         **************************************************************/
+
         String getWeatherExtra = intent.getStringExtra("weather");
         Log.i("TEST", "넘겨받은 선택된 날씨" + getWeatherExtra);
 
@@ -72,6 +77,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentInfo("INFO")
                 .setContentIntent(pendingI);
 
+        /** Intent로 넘겨받은 값에 따른 notiy 메세지 변경 **/
         if("맑음".equals(getWeatherExtra)){
             builder.setContentText("오늘 해 쨍쨍하다!! 선크림 바르고 가라이");
         }else  if("비".equals(getWeatherExtra)){
@@ -98,10 +104,6 @@ public class AlarmReceiver extends BroadcastReceiver {
             SharedPreferences.Editor editor = context.getSharedPreferences("daily alarm", MODE_PRIVATE).edit();
             editor.putLong("nextNotifyTime", nextNotifyTime.getTimeInMillis());
             editor.apply();
-
-            Date currentDateTime = nextNotifyTime.getTime();
-            String date_text = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분 ", Locale.getDefault()).format(currentDateTime);
-            Toast.makeText(context.getApplicationContext(),"다음 알람은 " + date_text + "으로 알람이 설정되었습니다!", Toast.LENGTH_SHORT).show();
         }
     }
 }
