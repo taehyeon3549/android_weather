@@ -32,15 +32,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.weather.Alarm.AlarmData;
+import com.example.weather.Alarm.AlarmReceiver;
 import com.example.weather.WeatherAPI.LocationCodeFetcher;
 import com.example.weather.WeatherAPI.Pin;
 import com.example.weather.WeatherAPI.WeatherFetcher;
 import com.example.weather.WeatherAPI.WeatherSet;
 import com.example.weather.cLocation.ConvertLatLon;
 import com.example.weather.cLocation.MyLocation;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+
 
 import java.io.IOException;
 import java.sql.Time;
@@ -82,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AlarmReceiver alarmReceiver = new AlarmReceiver();
 
         /** 내 현재 좌표 가져오기 **/
         myLocation = new MyLocation(this);
@@ -319,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
         public int getItemViewType(int position) { return position; } //중첩 일어나는 에러
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int index) {
+        public ViewHolder onCreateViewHolder(final ViewGroup parent, final int index) {
             int layoutId;
             layoutId = R.layout.list_item_left_right;
             /*
@@ -392,13 +392,23 @@ public class MainActivity extends AppCompatActivity {
             });
 
             /** 스위치 Onchanged 이벤트 **/
+
+
+
             viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+
+
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    Log.d("test","위치값은 : "+ index);
+
                     if(isChecked == true){
                         Log.i("TEST", "switch 버튼 TRUE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
+                        alarmDataHashMap.get(index).set_alarm_state(true);
                     }else{
                         Log.i("TEST", "switch 버튼 FALSE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
+                        alarmDataHashMap.get(index).set_alarm_state(false);
                     }
                 }
             });

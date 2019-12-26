@@ -214,7 +214,6 @@ public class AlarmActivity extends AppCompatActivity {
         /** 메인 화면으로 이동 **/
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        //널을 사용하여 초기 필요..
         //startActivity(intent);
         setResult(RESULT_OK, intent);
 
