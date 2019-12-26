@@ -82,6 +82,7 @@ public class WeatherFetcher {
             sUrl += uri[i];
 
         JSONArray jsonArr = weatherParser.getWeatherJSONArray(sUrl);
+        Log.i("TEST", "검색  URL 는 " + sUrl);
 
         for (int i = 0; i < jsonArr.size(); i++) {
             try {

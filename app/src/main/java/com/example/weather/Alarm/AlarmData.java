@@ -8,6 +8,8 @@ public class AlarmData {
     //시간, 날씨, 상태
     private String time;
     private String weather;
+    private String location;
+
     private Boolean alarm_state;
 
     public AlarmData(Calendar calendar, String weather, Boolean alarm_state){
