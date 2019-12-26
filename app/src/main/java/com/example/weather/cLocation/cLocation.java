@@ -1,6 +1,8 @@
 package com.example.weather.cLocation;
 
-public class cLocation {
+import java.io.Serializable;
+
+public class cLocation implements Serializable {
     private String address;
     private String x;
     private String y;

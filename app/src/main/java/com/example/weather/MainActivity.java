@@ -62,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
     String[] location = {"대구광역시", "동구", "안심1동"};
     LocationCodeFetcher lcf;
     WeatherFetcher wf;
-    private int REQUEST_TEST = 1;
+    private int REQUEST_SET_ALARM = 2;
+    private int REQUEST_SET_LOCATE = 3;
     Intent ReceivedIntent;
     Adapter adapter;
     RecyclerView recycler;
@@ -107,7 +108,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent set_Alarm = new Intent(MainActivity.this, AlarmActivity.class);
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivity(set_Alarm);
+                set_Alarm.putExtra("x",pin.getSx());
+                set_Alarm.putExtra("y",pin.getSy());
+                set_Alarm.putExtra("address",location[0]+" "+location[1]+" "+location[2]);
+                startActivityForResult(set_Alarm, REQUEST_SET_ALARM);
             }
         });
 
@@ -116,8 +120,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent set_locate = new Intent(MainActivity.this, AddressSearchActivity.class);
                 set_locate.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-
-                startActivityForResult(set_locate, REQUEST_TEST);
+                startActivityForResult(set_locate, REQUEST_SET_LOCATE);
             }
         });
 
@@ -220,8 +223,19 @@ public class MainActivity extends AppCompatActivity {
 
         /***  주소 변경 부분 ***/
         try{
+
+            Log.d("test",ReceivedIntent.getExtras().getString("address"));
+            Log.d("test","4321 "+ReceivedIntent.getExtras().getString("x"));
+            Log.d("test","4321 "+ReceivedIntent.getExtras().getString("y"));
+
             location = ReceivedIntent.getExtras().getString("address").split("\\s");
-            pin = new Pin(ReceivedIntent.getExtras().getString("x"), ReceivedIntent.getExtras().getString("y"));
+            pin = lcf.fetchLocationCode(location);
+            pin.setSx(ReceivedIntent.getExtras().getString("x"));
+            pin.setSy(ReceivedIntent.getExtras().getString("y"));
+
+            Log.d("test","43211 "+pin.getSx());
+            Log.d("test","43211 "+pin.getSy());
+
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
 
             weather.weatherIcon(MainActivity.this);
@@ -231,14 +245,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    /***************************************yong
+     *  Intent 수신을 위한 onActivityResult Override
+     * **************************************/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == 1){
-            if (resultCode == AddressSearchActivity.RESULT_OK){
-                Log.e("test", "결과 받기 성공");
-                ReceivedIntent=data;
+        if (resultCode == AddressSearchActivity.RESULT_OK){
+            if(requestCode == REQUEST_SET_LOCATE) {
+                Log.e("test", "주소 검색: intent 결과 받기 성공");
+                ReceivedIntent = data;
+            }
+        }
+        if (resultCode == AlarmActivity.RESULT_OK) {
+            if (requestCode == REQUEST_SET_ALARM) {
+                Log.e("test", "알람 설정: intent 결과 받기 성공");
+                ReceivedIntent = data;
             }
         }
     }
@@ -275,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
 
                     try{
                         alarmData = new AlarmData(null,anyweather[1],Boolean.TRUE);
+                        alarmData = new AlarmData(null,anyweather[1],anyweather[2],Boolean.TRUE);
                     }
                     catch (Exception E){
                         Log.i("TEST", "생성이 글러머금" + E.toString());
@@ -287,8 +311,8 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("TEST", "sharedPreferences 값 못 가져옴 " + E.toString());
                 }
             }
-
         }
+
         @Override
         public int getItemViewType(int position) {
             return position % 3;
@@ -323,6 +347,7 @@ public class MainActivity extends AppCompatActivity {
             /** textview 삽입 ( 해당 row index는 viewType으로 구분) **/
             viewHolder.weather.setText(alarmDataHashMap.get(index).get_weather());
             viewHolder.time.setText(alarmDataHashMap.get(index).get_time());
+            viewHolder.location.setText(alarmDataHashMap.get(index).get_location());
 
 
             View.OnClickListener onClick = new View.OnClickListener() {
