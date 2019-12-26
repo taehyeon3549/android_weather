@@ -32,11 +32,11 @@ public class AlarmReceiver extends BroadcastReceiver {
          **************************************************************/
 
         String getWeatherExtra = intent.getStringExtra("weather");
-        //String getx = intent.getStringExtra("x");
-        //String gety = intent.getStringExtra("y");
-        Log.i("TEST", "넘겨받은 선택된 날씨" + getWeatherExtra);
-        //Log.i("TEST", "넘겨받은 선택된 좌표 x" + getx);
-        //Log.i("TEST", "넘겨받은 선택된 좌표 y" + gety);
+        String getx = intent.getStringExtra("x");
+        String gety = intent.getStringExtra("y");
+        Log.i("TEST", "AlarmReceiver_넘겨받은 선택된 날씨" + getWeatherExtra);
+        Log.i("TEST", "AlarmReceiver_넘겨받은 선택된 좌표 x" + getx);
+        Log.i("TEST", "AlarmReceiver_넘겨받은 선택된 좌표 y" + gety);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(context, MainActivity.class);
