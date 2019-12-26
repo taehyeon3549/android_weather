@@ -194,12 +194,14 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == AddressSearchActivity.RESULT_OK){
             if(requestCode == REQUEST_SET_LOCATE) {
                 Log.e("test", "주소 검색: intent 결과 받기 성공");
+                ReceivedIntent = null;
                 ReceivedIntent = data;
             }
         }
         if (resultCode == AlarmActivity.RESULT_OK) {
             if (requestCode == REQUEST_SET_ALARM) {
                 Log.e("test", "알람 설정: intent 결과 받기 성공");
+                ReceivedIntent = null;
                 ReceivedIntent = data;
             }
         }
@@ -253,9 +255,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getItemViewType(int position) {
-            return position % 3;
-        }
+        public int getItemViewType(int position) { return position; } //중첩 일어나는 에러
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int index) {
