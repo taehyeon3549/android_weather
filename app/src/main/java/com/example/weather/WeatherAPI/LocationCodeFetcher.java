@@ -71,7 +71,7 @@ public class LocationCodeFetcher extends AsyncTask<String[], String[], Pin> {
             jsonArrLeaf = jjp.getRemoteJSONArray(getStrUrl("leaf", mapMdl.get(saLocation[1])));
             mapLeaf = jjp.getJsonLeafMap(jsonArrLeaf);
         }catch (Exception E){
-            Log.i("TEST", E.toString());
+            Log.i("TEST", "시도군 검색 에러(LocationCodeFetcher.java) >>" + E.toString());
         }
 
         return mapLeaf.get(saLocation[saLocation.length - 1]);

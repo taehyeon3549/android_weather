@@ -16,6 +16,8 @@ public class ConvertLatLon {
     public final static int NY = 253;       // Y 축 격자점 수
 
     private ArrayList<Float> xyPin;
+    private float lon, lat;
+    LamcParameter lamcParameter;
 
     // 파라미터 클래스
     class LamcParameter{
@@ -48,8 +50,8 @@ public class ConvertLatLon {
 
     // 생성자
     public ConvertLatLon(float longitude, float latitude){
-        float lon = longitude;
-        float lat = latitude;
+        lon = longitude;
+        lat = latitude;
 
         //
         //  동네예보 지도 정보
@@ -65,7 +67,7 @@ public class ConvertLatLon {
         int first = 0;
 
         // 기본 파라미터 생성
-        LamcParameter lamcParameter = new LamcParameter(Re, grid, slat1, slat2, olon, olat, xo, yo, first);
+        lamcParameter = new LamcParameter(Re, grid, slat1, slat2, olon, olat, xo, yo, first);
 
         // 변환 시작
         xyPin = map_conv(lon, lat, lamcParameter);
@@ -79,6 +81,15 @@ public class ConvertLatLon {
     public int getY(){
         int Y = Math.round(xyPin.get(1));
         return Y;
+    }
+
+    public void setLonLat(String x, String y){
+        this.lon = Float.parseFloat(x);
+        this.lat = Float.parseFloat(y);
+    }
+
+    public void convertPin(){
+        this.map_conv(this.lon, this.lat, this.lamcParameter);
     }
 
 
