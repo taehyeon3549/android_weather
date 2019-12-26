@@ -36,8 +36,9 @@ public class AlarmActivity extends AppCompatActivity {
     RadioGroup rg_weather;
     RadioButton rb_fine, rb_rain, rb_cloud, rb_snow;
     TimePicker time;
-
+    Intent ReceivedIntent;
     String checked_weather = "맑음";
+    String location = "주소";
     int tp_hour = 12;
     int tp_min = 12;
 
@@ -53,6 +54,10 @@ public class AlarmActivity extends AppCompatActivity {
         rb_cloud = (RadioButton)findViewById(R.id.rb_cloud);
         rb_snow = (RadioButton)findViewById(R.id.rb_snow);
         time = (TimePicker)findViewById(R.id.tp_time);
+
+        ReceivedIntent = getIntent();
+        location =ReceivedIntent.getExtras().getString("address");
+        Log.d("test",ReceivedIntent.getExtras().getString("address"));
 
         /** 시간 설정 **/
         time.setIs24HourView(true);     //24시간 설정
@@ -136,7 +141,8 @@ public class AlarmActivity extends AppCompatActivity {
                 editor.apply();
 
                 /** 알람 세팅 **/
-                setAlarm(calendar, checked_weather);
+                //setAlarm(calendar, checked_weather);
+                setAlarm(calendar, checked_weather,location);
 
                 //Toast.makeText(AlarmActivity.this, "날씨는  " + checked_weather + "시간은 " + tp_hour + "시" + tp_min + "분", Toast.LENGTH_SHORT).show();
                 finish();
@@ -144,10 +150,11 @@ public class AlarmActivity extends AppCompatActivity {
         });
     }
 
-    void setAlarm(Calendar calendar, String checked_weather)
+    void setAlarm(Calendar calendar, String checked_weather,String location)
     {
         /** AlarmData 생성 **/
-        AlarmData myData = new AlarmData(calendar, checked_weather, true);
+        //AlarmData myData = new AlarmData(calendar, checked_weather, true);
+        AlarmData myData = new AlarmData(calendar, checked_weather,location, true);
         Log.i("TEST", myData.get_time());
 
         /** sharedPreferencs 값 넣음 **/
@@ -159,9 +166,10 @@ public class AlarmActivity extends AppCompatActivity {
          * 알람History 설정
          * Format
          * Tag : alarm01
-         * Value : 설정 시간/설정 날씨
+         * Value : 설정 시간/설정 날씨/지역정보
          *******************************/
-        editor.putString("alarm"+(alarmPreferences.getAll().size()+1), myData.get_time()+"/"+checked_weather);
+        //editor.putString("alarm"+(alarmPreferences.getAll().size()+1), myData.get_time()+"/"+checked_weather);
+        editor.putString("alarm"+(alarmPreferences.getAll().size()+1), myData.get_time()+"/"+checked_weather+"/"+location);
         editor.commit();
 
         Boolean dailyNotify = true; // 무조건 알람을 사용
@@ -173,6 +181,7 @@ public class AlarmActivity extends AppCompatActivity {
         /** 선택한 날씨 정보 Intent로 넘김 **/
         /** PendingIntent 의 4번째 파라미터는 Flag로 이미 실행 중인 알람이 있다면 extra Data만 교체함 **/
         alarmIntent.putExtra("weather", checked_weather);
+
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -197,7 +206,8 @@ public class AlarmActivity extends AppCompatActivity {
         /** 메인 화면으로 이동 **/
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        startActivity(intent);
+        //startActivity(intent);
+        setResult(RESULT_OK, intent);
 
 //        else { //Disable Daily Notifications
 //            if (PendingIntent.getBroadcast(this, 0, alarmIntent, 0) != null && alarmManager != null) {
@@ -209,4 +219,6 @@ public class AlarmActivity extends AppCompatActivity {
 //                    PackageManager.DONT_KILL_APP);
 //        }
     }
+
+
 }

@@ -69,8 +69,12 @@ public class AddressSearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("address",addressList.get(position).getAddress());
-                intent.putExtra("x",addressList.get(position).getX());
                 intent.putExtra("y",addressList.get(position).getY());
+                intent.putExtra("x",addressList.get(position).getX());
+
+                Log.d("test","1234 "+addressList.get(position).getX());
+                Log.d("test","1234 "+addressList.get(position).getY());
+
                 Toast.makeText(getApplicationContext(),"선택 : "+addressList.get(position).getAddress(),Toast.LENGTH_SHORT).show();
 
                 //startActivityForResult(intent,0);//액티비티 띄우기
