@@ -1,16 +1,11 @@
 package com.example.weather;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +15,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -34,23 +28,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.weather.Alarm.AlarmData;
-import com.example.weather.Alarm.AlarmReceiver;
 import com.example.weather.WeatherAPI.LocationCodeFetcher;
 import com.example.weather.WeatherAPI.Pin;
 import com.example.weather.WeatherAPI.WeatherFetcher;
 import com.example.weather.WeatherAPI.WeatherSet;
 import com.example.weather.cLocation.ConvertLatLon;
-import com.example.weather.cLocation.MyLocation;
-
 
 import java.io.IOException;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
 
 import ru.rambler.libs.swipe_layout.SwipeLayout;
 
@@ -61,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     Switch AlarmSwitch;
     SimpleDateFormat sdf;
     WeatherSet weather;
-    String[] location = {"대구광역시", "동구", "안심1동"};
+    String[] Stringlocation = {"대구광역시", "동구", "안심1동"};
     LocationCodeFetcher lcf;
     WeatherFetcher wf;
     private int REQUEST_SET_ALARM = 2;
@@ -71,37 +58,10 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recycler;
     int i = 0;
 
-    /** xy좌표 **/
-    double PinX, PinY;
-    MyLocation myLocation;
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        myLocation.stopLocationUpdates();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AlarmReceiver alarmReceiver = new AlarmReceiver();
-
-        /** 내 현재 좌표 가져오기 **/
-        myLocation = new MyLocation(this);
-        myLocation.startUpdatesHandler();
-
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                PinX = myLocation.getmLatitude();
-                PinY = myLocation.getmLongitude();
-                Log.i("TEST", "출력 >> " + PinX  +  PinY);
-            }
-        };
-
-        Timer timer = new Timer();
-        timer.schedule(timerTask, 0, 1000);
 
         bt_setAlarm = (Button) findViewById(R.id.bt_setAlarm);
         bt_search = (Button) findViewById(R.id.bt_search);
@@ -115,9 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 set_Alarm.putExtra("x",pin.getSx());
                 set_Alarm.putExtra("y",pin.getSy());
-                set_Alarm.putExtra("posion",i);  // 문제점!
-                i = i+1;
-                set_Alarm.putExtra("address",location[0]+" "+location[1]+" "+location[2]);
+                set_Alarm.putExtra("address", Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]);
                 startActivityForResult(set_Alarm, REQUEST_SET_ALARM);
             }
         });
@@ -131,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         /** SwipView 알람 기록 **/
         LinearLayoutManager manager = new LinearLayoutManager(this);
         adapter = new Adapter();
@@ -141,58 +98,34 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//        /***  지역 위치 설정 ***/
-//        weather = null;
-//        lcf = new LocationCodeFetcher();
-//        wf = new WeatherFetcher();
-//        sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
-//        pin = lcf.fetchLocationCode(location);
-//
-//        try {
-//            weather = wf.fetchWeather(pin.getSx(), pin.getSy());
-//            //Log.i("TEST", "청운 효자동 x y 출력" + pin.getSx() + ", " +  pin.getSy());
-//        } catch (Exception E) {
-//            Log.i("TEST", "날씨 정보 파싱 에러 : " + E.toString());
-//        }
-
-        /***  위치값 가져오기 ***/
-        GetLocation mylocation = new GetLocation();
-        mylocation.StartGetLocation(this);
-        Log.i("TEST", "현재 위치의 x y 좌표는 " + mylocation.getxPin() + " ::: " + mylocation.getyPin());
-
+        /***  지역 위치 설정 ***/
         weather = null;
         lcf = new LocationCodeFetcher();
         wf = new WeatherFetcher();
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
-        tw_weather = (TextView)findViewById(R.id.tw_weather);
+        pin = lcf.fetchLocationCode(Stringlocation);
 
-        if(mylocation.getxPin() != 0){
-            //pin = lcf.fetchLocationCode(location);
-            try {
-                Log.i("TEST", "현재 위치값으로 날씨 정보 갱신");
-                weather = wf.fetchWeather( Integer.toString(mylocation.getxPin()), Integer.toString(mylocation.getyPin()));
-            } catch (Exception E) {
-                Log.i("TEST", "날씨 정보 파싱 에러 : " + E.toString());
-            }
-
-            /***  날씨 아이콘 설정 ***/
-            weather.weatherIcon(this);
-            // TV 설정
-
-            tw_weather.setText(sdf.format(weather.getBaseDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
-        }else{
-            Toast.makeText(this, "현재 위치값을 가지고 오고 있습니다.", Toast.LENGTH_SHORT).show();
+        try {
+            weather = wf.fetchWeather(pin.getSx(), pin.getSy());
+            //Log.i("TEST", "청운 효자동 x y 출력" + pin.getSx() + ", " +  pin.getSy());
+        } catch (Exception E) {
+            Log.i("TEST", "날씨 정보 파싱 에러 : " + E.toString());
         }
 
+        /***  날씨 아이콘 설정 ***/
+        weather.weatherIcon(this);
+        // TV 설정
+        tw_weather = (TextView)findViewById(R.id.tw_weather);
+        tw_weather.setText(sdf.format(weather.getBaseDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
 
         SharedPreferences alarmPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = alarmPreferences.edit();
         editor.clear();
         editor.commit();
 
-
-
-
+        /***  위치값 가져오기 ***/
+        GetLocation mylocation = new GetLocation();
+        mylocation.StartGetLocation(this);
 
         //Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
         //Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
@@ -202,14 +135,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /** GPS 퍼미션 체크 **/
-        if (myLocation.mRequestingLocationUpdates && checkPermissions()) {
-            /** Location 업데이트 시작 **/
-            myLocation.startLocationUpdates();
-        } else if (!checkPermissions()) {
-            requestPermissions();
-        }
-
         /***  sharedPreferens 확인 ***/
         SharedPreferences alarmPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         /***  알람 있는지 유무 체크 ***/
@@ -228,26 +153,25 @@ public class MainActivity extends AppCompatActivity {
 
         /***  주소 변경 부분 ***/
         try{
-
             Log.d("test",ReceivedIntent.getExtras().getString("address"));
             Log.d("test","4321 "+ReceivedIntent.getExtras().getString("x"));
             Log.d("test","4321 "+ReceivedIntent.getExtras().getString("y"));
 
-            location = ReceivedIntent.getExtras().getString("address").split("\\s");
-            pin = lcf.fetchLocationCode(location);
+            Stringlocation = ReceivedIntent.getExtras().getString("address").split("\\s");
+            pin = lcf.fetchLocationCode(Stringlocation);
             pin.setSx(ReceivedIntent.getExtras().getString("x"));
             pin.setSy(ReceivedIntent.getExtras().getString("y"));
 
             Log.d("test","43211 "+pin.getSx());
             Log.d("test","43211 "+pin.getSy());
-
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
-
-            weather.weatherIcon(MainActivity.this);
-            tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
         }catch (Exception E){
-            Log.i("test", "주소 변경부분 에러 :: " + E.toString());
+            Log.i("test", E.toString());
         }
+        weather.weatherIcon(MainActivity.this);
+        tw_weather.setText(Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+        //Log.i("test", "x y 변경값 없음");
+
     }
 
 
@@ -260,14 +184,12 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == AddressSearchActivity.RESULT_OK){
             if(requestCode == REQUEST_SET_LOCATE) {
                 Log.e("test", "주소 검색: intent 결과 받기 성공");
-                ReceivedIntent = null;
                 ReceivedIntent = data;
             }
         }
         if (resultCode == AlarmActivity.RESULT_OK) {
             if (requestCode == REQUEST_SET_ALARM) {
                 Log.e("test", "알람 설정: intent 결과 받기 성공");
-                ReceivedIntent = null;
                 ReceivedIntent = data;
             }
         }
@@ -321,10 +243,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getItemViewType(int position) { return position; } //중첩 일어나는 에러
+        public int getItemViewType(int position) {
+            return position;
+        }
 
         @Override
-        public ViewHolder onCreateViewHolder(final ViewGroup parent, final int index) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int index) {
             int layoutId;
             layoutId = R.layout.list_item_left_right;
             /*
@@ -398,16 +322,10 @@ public class MainActivity extends AppCompatActivity {
 
             /** 스위치 Onchanged 이벤트 **/
             viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-
-
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.d("test","위치값은 : "+ index);
-
                     if(isChecked == true){
                         Log.i("TEST", "switch 버튼 TRUE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
-                        alarmDataHashMap.get(index).set_alarm_state(true);
                     }else{
                         Log.i("TEST", "switch 버튼 FALSE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
                     }
@@ -540,8 +458,8 @@ public class MainActivity extends AppCompatActivity {
                 /***  위도 경도를 x,y로 변환 ***/
                 ConvertLatLon convertLatLon = new ConvertLatLon((float) longitude, (float) latitude);
 
-                PinX = convertLatLon.getX();
-                PinY = convertLatLon.getY();
+                xPin = convertLatLon.getX();
+                yPin = convertLatLon.getY();
 
                 /***  위도 경도를 주소로 변환 ***/
                 Geocoder geocoder = new Geocoder(MainActivity.this);
@@ -564,8 +482,27 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
+                /***  메인 액티비티의 Textview의 값을 변경 ***/
+                //displayLocation("위도 : " + longitude + " 경도 : " + latitude + "X 값 : " + convertLatLon.getX() + " Y 값 :" + convertLatLon.getY() + " \n서비스 제공자" + provider);
+
                 Toast.makeText(MainActivity.this, "위도 : " + longitude + " 경도 : " + latitude + " \n서비스 제공자" + provider, Toast.LENGTH_LONG).show();
                 Log.i("TEST", "위도 : " + longitude + " 경도 : " + latitude + "X 값 : " + convertLatLon.getX() + " Y 값 :" + convertLatLon.getY() + " \n서비스 제공자" + provider);
+
+
+                /** 변환된 xy로 날씨 재 검색 **/
+                try{
+                    weather = wf.fetchWeather(pin.getSx(), pin.getSy());
+                    weather.weatherIcon(MainActivity.this);
+
+                    /**  location 배열 재 설정 **/
+                    Stringlocation[0] = list.get(0).getAddressLine(0).split(" ")[1];
+                    Stringlocation[1] = list.get(0).getAddressLine(0).split(" ")[2];
+                    Stringlocation[2] = list.get(0).getAddressLine(0).split(" ")[3];
+
+                    tw_weather.setText(list.get(0).getAddressLine(0)+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+                }catch (Exception E){
+                    Log.i("TEST", "현재 위치 값으로 변환 실패");
+                }
             }
 
             @Override
@@ -583,33 +520,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
-    }
-
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-
-    private boolean checkPermissions() {
-        int permissionState = ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION);
-        return permissionState == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private void requestPermissions() {
-        boolean shouldProvideRationale =
-                ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION);
-
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
-        if (shouldProvideRationale) {
-            Log.i("TEST", "Displaying permission rationale to provide additional context.");
-        } else {
-            Log.i("TEST", "Requesting permission");
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    REQUEST_PERMISSIONS_REQUEST_CODE);
-        }
     }
 }
