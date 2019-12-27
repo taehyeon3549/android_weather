@@ -30,7 +30,7 @@ import ru.rambler.libs.swipe_layout.SwipeLayout;
 private class MainAdapter extends BaseAdapter {
 
     private int count = 0;           //세팅 갯수
-    private int[] itemsOffset = new int[count];
+    private  int[] itemsOffset = new int[count];
 
     AlarmData alarmData;
 
@@ -44,7 +44,7 @@ private class MainAdapter extends BaseAdapter {
     //새로 변경중 끝
     SharedPreferences getShared;
 
-    public MainAdapter(HashMap<Integer, AlarmData> alarmDataHashMap, Context context) {
+    public MainAdapter(HashMap<Integer, AlarmData> alarmDataHashMap, Context context){
         this.alarmDataHashMap = alarmDataHashMap;
         this.context = context;
         this.inflate = LayoutInflater.from(context);
@@ -54,11 +54,9 @@ private class MainAdapter extends BaseAdapter {
     public int getCount() {
         return alarmDataHashMap.size();
     }
-
     public int getItemCount() { // 카운트로 대체 되었음
         return count;
     }
-
     @Override
     public Object getItem(int i) {
         return null;
@@ -68,8 +66,6 @@ private class MainAdapter extends BaseAdapter {
     public long getItemId(int i) {
         return 0;
     }
-    @Override
-    public int getItemViewType(int position) { return position; }
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
@@ -77,57 +73,49 @@ private class MainAdapter extends BaseAdapter {
         final int pos = position;
         final Context context = viewGroup.getContext();
 
-        if (convertView == null) {
-            convertView = inflate.inflate(R.layout.row_listview, null);
+        if(convertView == null){
+            convertView = inflate.inflate(R.layout.row_listview,null);
 
-            viewHolder = new ViewHolder(getView(  R.layout.list_item_left_right,ViewGroup,viewGroup));
+            viewHolder = new ViewHolder();
+            viewHolder.label = (TextView) convertView.findViewById(R.id.label);
 
-            viewHolder.swipeLayout = convertView.findViewById(R.id.swipe_layout);
-            viewHolder.rightView = convertView.findViewById(R.id.right_view);
-            viewHolder.leftView = convertView.findViewById(R.id.left_view);
-            viewHolder.time = convertView.findViewById(R.id.tvTime);
-            viewHolder.weather = convertView.findViewById(R.id.tvWeather);
-            viewHolder.location = convertView.findViewById(R.id.tvLocation);
-            viewHolder.alarmSwitch = convertView.findViewById(R.id.AlarmSwitch);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (MainAdapter.ViewHolder) convertView.getTag();
+            convertView.setTag(recyclerView);
+        }else{
+            viewHolder = (MainAdapter.ViewHolder)convertView.getTag();
         }
 
         // 리스트에 있는 데이터를 리스트뷰 셀에 뿌린다.
-        //viewHolder.label.setText(alarmDataHashMap.get(position).getAddress()); //여기 에러 ArrayList의 값이 가져 오지 못한다.
-        viewHolder.time.setText(        alarmDataHashMap.get(position).get_time());
-        viewHolder.location.setText(        alarmDataHashMap.get(position).get_location());
-        viewHolder.weather.setText(        alarmDataHashMap.get(position).get_weather());
-
-
-        //해줄 필요없음 -> 리스너 작업 필요
-        //viewHolder.swipeLayout
-        //viewHolder.rightView
-        //viewHolder.leftView
-        //viewHolder.alarmSwitch
-
-
+        viewHolder.label.setText(alarmDataHashMap.get(position).getAddress()); //여기 에러 ArrayList의 값이 가져 오지 못한다.
 
         return convertView;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public  SwipeLayout swipeLayout;
-        public  View rightView;
-        public  View leftView;
+        //public TextView label;
 
-        public TextView time;
-        public TextView weather;
-        public TextView location;
-        public Switch alarmSwitch;
+        private final SwipeLayout swipeLayout;
+        private final View rightView;
+        private final View leftView;
 
-        ViewHolder(View itemView) {
-            super(itemView);
+        TextView time;
+        TextView weather;
+        TextView location;
+        Switch alarmSwitch;
+
+        recyclerView() {
+            swipeLayout = findViewById(R.id.swipe_layout);
+            rightView = findViewById(R.id.right_view);
+            leftView = findViewById(R.id.left_view);
+
+            time = findViewById(R.id.tvTime);
+            weather = findViewById(R.id.tvWeather);
+            location = findViewById(R.id.tvLocation);
+            alarmSwitch = findViewById(R.id.AlarmSwitch);
+        }
     }
-}
 
-//메인에서 작업 해줘야 하는 부분
+    //일단 여기까지
+
 
     public void setAdapter(SharedPreferences sharedPreferences){
         getShared = sharedPreferences;
@@ -163,8 +151,11 @@ private class MainAdapter extends BaseAdapter {
             }
         }
     }
-//
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
 
     @Override
     public MainActivity.Adapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int index) {
@@ -174,22 +165,19 @@ private class MainAdapter extends BaseAdapter {
         final View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
         final MainActivity.Adapter.ViewHolder viewHolder = new MainActivity.Adapter.ViewHolder(itemView);
 
-        /* 작업 완료
-        ///** textview 삽입 ( 해당 row index는 viewType으로 구분)
+        /** textview 삽입 ( 해당 row index는 viewType으로 구분) **/
         viewHolder.weather.setText(alarmDataHashMap.get(index).get_weather());
         viewHolder.time.setText(alarmDataHashMap.get(index).get_time());
         viewHolder.location.setText(alarmDataHashMap.get(index).get_location());
-        */
 
-        //
-        item listener part
+
         View.OnClickListener onClick = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewHolder.swipeLayout.animateReset();
             }
         };
-
+item listener part
         if (viewHolder.leftView != null) {
             viewHolder.leftView.setClickable(true);
             //viewHolder.leftView.setOnClickListener(onClick);

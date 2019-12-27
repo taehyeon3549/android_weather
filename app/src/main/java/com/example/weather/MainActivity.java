@@ -58,16 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private int REQUEST_SET_ALARM = 2;
     private int REQUEST_SET_LOCATE = 3;
     Intent ReceivedIntent;
-
-
-    int i = 0;
-
-    //수정중
     Adapter adapter;
-    RecyclerView recycler; // recycler == ListView
-    //추가함
-    HashMap<Integer, AlarmData> alarmDataHashMap;
-
+    RecyclerView recycler;
+    int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,10 +104,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new Adapter();
         recycler = findViewById(R.id.recyclerView);
         recycler.setLayoutManager(manager);
-
-
-        MainAdapter adapter1 = new MainAdapter(alarmDataHashMap,this); //어댑터 생성
-        recycler.setAdapter(adapter1);
+        recycler.setAdapter(adapter);
 
 
         //adapter viewHolder
