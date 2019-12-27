@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.weather.Alarm.AlarmData;
+import com.example.weather.Alarm.AlarmReceiver;
 import com.example.weather.WeatherAPI.LocationCodeFetcher;
 import com.example.weather.WeatherAPI.Pin;
 import com.example.weather.WeatherAPI.WeatherFetcher;
@@ -35,6 +38,7 @@ import com.example.weather.WeatherAPI.WeatherSet;
 import com.example.weather.cLocation.ConvertLatLon;
 
 import java.io.IOException;
+import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
                 set_Alarm.putExtra("x",pin.getSx());
                 set_Alarm.putExtra("y",pin.getSy());
                 set_Alarm.putExtra("address", Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]);
+                Log.d("TEST","adapter.alarmDataHashMap.size()"+adapter.alarmDataHashMap.size());
+                set_Alarm.putExtra("postion",adapter.alarmDataHashMap.size()+1); //수정 완료
+                //데이터 수정 삭제를 위한  구문
+                //adapter.alarmDataHashMap
+                //현재 알람의 갯수를 파악하여 넘어간다.
+
                 startActivityForResult(set_Alarm, REQUEST_SET_ALARM);
             }
         });
@@ -95,6 +105,9 @@ public class MainActivity extends AppCompatActivity {
         recycler = findViewById(R.id.recyclerView);
         recycler.setLayoutManager(manager);
         recycler.setAdapter(adapter);
+
+
+        //adapter viewHolder
 
 
 
@@ -147,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
             recycler.removeAllViews();
             recycler.setAdapter(adapter);
 
+
             Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
 
         }
@@ -187,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 ReceivedIntent = data;
             }
         }
+
         if (resultCode == AlarmActivity.RESULT_OK) {
             if (requestCode == REQUEST_SET_ALARM) {
                 Log.e("test", "알람 설정: intent 결과 받기 성공");
@@ -198,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
     /***************************************
      *  SwipView Adapter
      * **************************************/
-    private static class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+    private class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
         private int count = 0;           //세팅 갯수
         private  int[] itemsOffset = new int[count];
@@ -248,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int index) {
+        public ViewHolder onCreateViewHolder(ViewGroup parent, final int index) {
             int layoutId;
             layoutId = R.layout.list_item_left_right;
             /*
@@ -270,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
             }
             */
 
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+            final View itemView = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
             final ViewHolder viewHolder = new ViewHolder(itemView);
 
             /** textview 삽입 ( 해당 row index는 viewType으로 구분) **/
@@ -288,12 +303,46 @@ public class MainActivity extends AppCompatActivity {
 
             if (viewHolder.leftView != null) {
                 viewHolder.leftView.setClickable(true);
-                viewHolder.leftView.setOnClickListener(onClick);
+                //viewHolder.leftView.setOnClickListener(onClick);
+                //수정파트
+                viewHolder.leftView.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                       public void onClick(View view) {
+                       Log.i("TEST", " Left : 수정하는 공간 버튼 형식");
+                       Log.i("TEST", "posion 값 : "+index);
+                       Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
+                       alarmModifyIntent.putExtra("posion",i);
+                       AlarmData tmp = alarmDataHashMap.get(i);
+
+                       alarmModifyIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                       startActivity(alarmModifyIntent);
+
+
+
+                       }
+                   }
+                );
             }
 
             if (viewHolder.rightView != null) {
                 viewHolder.rightView.setClickable(true);
-                viewHolder.rightView.setOnClickListener(onClick);
+                //viewHolder.rightView.setOnClickListener(onClick);
+                //수정파트
+                viewHolder.rightView.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           Log.i("TEST", " right : 삭제하는 공간 버튼 형식");
+                           Log.i("TEST", "posion 값 : "+index);
+                           AlarmData tmp = alarmDataHashMap.get(i);
+                           AlarmManager am = (AlarmManager)MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+                           Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+                           PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                           if (sender != null) { am.cancel(sender); sender.cancel(); }
+                           alarmDataHashMap.remove(index);
+
+                       }
+                   }
+                );
             }
 
             viewHolder.swipeLayout.setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
@@ -326,29 +375,16 @@ public class MainActivity extends AppCompatActivity {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked == true){
                         Log.i("TEST", "switch 버튼 TRUE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
+                        //index값으로 위치 및 hash 위치를 알수 있다. //수정파트
                     }else{
                         Log.i("TEST", "switch 버튼 FALSE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
+                        //수정파트
                     }
                 }
             });
 
             return new ViewHolder(itemView);
         }
-
-        /*
-        private void releaseAlarm(Context context){
-            Log.i("TEST", "releaseAlarm()");
-            AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-
-            Intent Intent = new Intent(INTENT_ACTION);
-            PendingIntent pIntent = PendingIntent.getActivity(context, 0, Intent, 0);
-            alarmManager.cancel(pIntent);
-
-            // 주석을 풀면 먼저 실행되는 알람이 있을 경우, 제거하고
-            // 새로 알람을 실행하게 된다. 상황에 따라 유용하게 사용 할 수 있다.
-//      alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 3000, pIntent);
-        }*/
-
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             holder.swipeLayout.setOffset(itemsOffset[position]);
@@ -371,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
             return count;
         }
 
-        static class ViewHolder extends RecyclerView.ViewHolder {
+        class ViewHolder extends RecyclerView.ViewHolder {
 
             private final SwipeLayout swipeLayout;
             private final View rightView;

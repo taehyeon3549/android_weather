@@ -72,12 +72,7 @@ public class AddressSearchActivity extends AppCompatActivity {
                 intent.putExtra("y",addressList.get(position).getY());
                 intent.putExtra("x",addressList.get(position).getX());
 
-                Log.d("test","1234 "+addressList.get(position).getX());
-                Log.d("test","1234 "+addressList.get(position).getY());
-
                 Toast.makeText(getApplicationContext(),"선택 : "+addressList.get(position).getAddress(),Toast.LENGTH_SHORT).show();
-
-                //startActivityForResult(intent,0);//액티비티 띄우기
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -111,10 +106,8 @@ public class AddressSearchActivity extends AppCompatActivity {
                             cLocationX = sheet.getCell(3, row).getContents();
                             cLocationY = sheet.getCell(4, row).getContents();
 
-
-
                             searchedList.add(new cLocation( cLocationAddress.toString(),cLocationX,cLocationY));
-                            //Log.d("test",cLocationAddress.toString()+cLocationX+cLocationY);
+
                             cLocationAddress.setLength(0);
                         }
                     }

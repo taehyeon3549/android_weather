@@ -62,9 +62,10 @@ public class AlarmActivity extends AppCompatActivity {
         getLocationExtras = ReceivedIntent.getExtras().getString("address");
         getxExtras = ReceivedIntent.getExtras().getString("x");
         getyExtras = ReceivedIntent.getExtras().getString("y");
-        getPostionExtras = ReceivedIntent.getExtras().getInt("posion");
+        getPostionExtras = ReceivedIntent.getExtras().getInt("postion");
 
-        //Log.d("test",ReceivedIntent.getExtras().getString("address"));
+
+        Log.d("test","intent int값 확인"+getPostionExtras);
 
         /** 시간 설정 **/
         time.setIs24HourView(true);     //24시간 설정
