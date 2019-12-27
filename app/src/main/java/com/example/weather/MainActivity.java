@@ -1,13 +1,11 @@
 package com.example.weather;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,11 +21,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,14 +34,10 @@ import com.example.weather.WeatherAPI.WeatherFetcher;
 import com.example.weather.WeatherAPI.WeatherSet;
 import com.example.weather.cLocation.ConvertLatLon;
 
-import org.apache.log4j.chainsaw.Main;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import ru.rambler.libs.swipe_layout.SwipeLayout;
 
@@ -56,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tv_location, tw_weather;
     SimpleDateFormat sdf;
     WeatherSet weather;
-    String[] location = {"대구광역시", "동구", "안심1동"};
+    String[] Stringlocation = {"대구광역시", "동구", "안심1동"};
     LocationCodeFetcher lcf;
     WeatherFetcher wf;
     private int REQUEST_SET_ALARM = 2;
@@ -81,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 set_Alarm.putExtra("x",pin.getSx());
                 set_Alarm.putExtra("y",pin.getSy());
-                set_Alarm.putExtra("address",location[0]+" "+location[1]+" "+location[2]);
+                set_Alarm.putExtra("address", Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]);
                 startActivityForResult(set_Alarm, REQUEST_SET_ALARM);
             }
         });
@@ -111,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         lcf = new LocationCodeFetcher();
         wf = new WeatherFetcher();
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
-        pin = lcf.fetchLocationCode(location);
+        pin = lcf.fetchLocationCode(Stringlocation);
 
         try {
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
@@ -165,21 +156,19 @@ public class MainActivity extends AppCompatActivity {
             Log.d("test","4321 "+ReceivedIntent.getExtras().getString("x"));
             Log.d("test","4321 "+ReceivedIntent.getExtras().getString("y"));
 
-            location = ReceivedIntent.getExtras().getString("address").split("\\s");
-            pin = lcf.fetchLocationCode(location);
+            Stringlocation = ReceivedIntent.getExtras().getString("address").split("\\s");
+            pin = lcf.fetchLocationCode(Stringlocation);
             pin.setSx(ReceivedIntent.getExtras().getString("x"));
             pin.setSy(ReceivedIntent.getExtras().getString("y"));
 
             Log.d("test","43211 "+pin.getSx());
             Log.d("test","43211 "+pin.getSy());
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
-
-            //파써를 이용하여 메인화면에 값을 변경 파썬도 실행
         }catch (Exception E){
             Log.i("test", E.toString());
         }
         weather.weatherIcon(MainActivity.this);
-        tw_weather.setText(location[0]+" "+location[1]+" "+location[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
+        tw_weather.setText(Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
         //Log.i("test", "x y 변경값 없음");
 
     }
@@ -254,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemViewType(int position) {
-            return position % 3;
+            return position;
         }
 
         @Override
@@ -488,9 +477,13 @@ public class MainActivity extends AppCompatActivity {
                 /** 변환된 xy로 날씨 재 검색 **/
                 try{
                     weather = wf.fetchWeather(pin.getSx(), pin.getSy());
-                    //파써를 이용하여 메인화면에 값을 변경 파썬도 실행
-
                     weather.weatherIcon(MainActivity.this);
+
+                    /**  location 배열 재 설정 **/
+                    Stringlocation[0] = list.get(0).getAddressLine(0).split(" ")[1];
+                    Stringlocation[1] = list.get(0).getAddressLine(0).split(" ")[2];
+                    Stringlocation[2] = list.get(0).getAddressLine(0).split(" ")[3];
+
                     tw_weather.setText(list.get(0).getAddressLine(0)+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
                 }catch (Exception E){
                     Log.i("TEST", "현재 위치 값으로 변환 실패");
