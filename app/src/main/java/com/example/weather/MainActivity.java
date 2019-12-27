@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     Pin pin = null;
     Button bt_setAlarm, bt_search;
     TextView tv_location, tw_weather;
+    Switch AlarmSwitch;
     SimpleDateFormat sdf;
     WeatherSet weather;
     String[] location = {"대구광역시", "동구", "안심1동"};
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     Intent ReceivedIntent;
     Adapter adapter;
     RecyclerView recycler;
+    int i = 0;
 
     /** xy좌표 **/
     double PinX, PinY;
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         bt_setAlarm = (Button) findViewById(R.id.bt_setAlarm);
         bt_search = (Button) findViewById(R.id.bt_search);
         tv_location = (TextView)findViewById(R.id.tv_location);
+        AlarmSwitch = (Switch)findViewById(R.id.AlarmSwitch);
 
         bt_setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
                 set_Alarm.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 set_Alarm.putExtra("x",pin.getSx());
                 set_Alarm.putExtra("y",pin.getSy());
+                set_Alarm.putExtra("posion",i);  // 문제점!
+                i = i+1;
                 set_Alarm.putExtra("address",location[0]+" "+location[1]+" "+location[2]);
                 startActivityForResult(set_Alarm, REQUEST_SET_ALARM);
             }
@@ -123,8 +130,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(set_locate, REQUEST_SET_LOCATE);
             }
         });
-
-
 
 
         /** SwipView 알람 기록 **/
@@ -392,9 +397,6 @@ public class MainActivity extends AppCompatActivity {
             });
 
             /** 스위치 Onchanged 이벤트 **/
-
-
-
             viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
 
@@ -408,13 +410,26 @@ public class MainActivity extends AppCompatActivity {
                         alarmDataHashMap.get(index).set_alarm_state(true);
                     }else{
                         Log.i("TEST", "switch 버튼 FALSE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
-                        alarmDataHashMap.get(index).set_alarm_state(false);
                     }
                 }
             });
 
             return new ViewHolder(itemView);
         }
+
+        /*
+        private void releaseAlarm(Context context){
+            Log.i("TEST", "releaseAlarm()");
+            AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+
+            Intent Intent = new Intent(INTENT_ACTION);
+            PendingIntent pIntent = PendingIntent.getActivity(context, 0, Intent, 0);
+            alarmManager.cancel(pIntent);
+
+            // 주석을 풀면 먼저 실행되는 알람이 있을 경우, 제거하고
+            // 새로 알람을 실행하게 된다. 상황에 따라 유용하게 사용 할 수 있다.
+//      alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 3000, pIntent);
+        }*/
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {

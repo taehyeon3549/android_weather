@@ -41,6 +41,7 @@ public class AlarmActivity extends AppCompatActivity {
     String getLocationExtras = "주소";
     String getxExtras = "-1";
     String getyExtras = "-1";
+    int getPostionExtras = -1;
     int tp_hour = 12;
     int tp_min = 12;
 
@@ -58,9 +59,10 @@ public class AlarmActivity extends AppCompatActivity {
         time = (TimePicker)findViewById(R.id.tp_time);
 
         ReceivedIntent = getIntent();
-        getLocationExtras =ReceivedIntent.getExtras().getString("address");
-        getxExtras =ReceivedIntent.getExtras().getString("x");
-        getyExtras=ReceivedIntent.getExtras().getString("y");
+        getLocationExtras = ReceivedIntent.getExtras().getString("address");
+        getxExtras = ReceivedIntent.getExtras().getString("x");
+        getyExtras = ReceivedIntent.getExtras().getString("y");
+        getPostionExtras = ReceivedIntent.getExtras().getInt("posion");
 
         //Log.d("test",ReceivedIntent.getExtras().getString("address"));
 
@@ -190,8 +192,8 @@ public class AlarmActivity extends AppCompatActivity {
         alarmIntent.putExtra("x", getxExtras);
         alarmIntent.putExtra("y", getyExtras);
 
-
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, getPostionExtras/*여기에 postion 값을 넣는다.*/, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0/*여기에 postion 값을 넣는다.*/, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
         /** 사용자가 매일 알람을 허용했다면 **/

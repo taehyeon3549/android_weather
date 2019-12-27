@@ -34,6 +34,7 @@ public class AlarmReceiver extends BroadcastReceiver {
          * 같은지 확인을 하고 같다면 notiy 출력 아니면 패스
          **************************************************************/
 
+
         WeatherSet weather =null;
         WeatherFetcher wf = new WeatherFetcher();
         String getWeatherExtra = intent.getStringExtra("weather"); //알람에 설정된 날씨 -> 맑음 , 흐림 , 비 , 눈 , 눈/비
