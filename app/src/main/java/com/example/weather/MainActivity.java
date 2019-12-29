@@ -42,12 +42,14 @@ import java.security.Key;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ru.rambler.libs.swipe_layout.SwipeLayout;
 
 public class MainActivity extends AppCompatActivity {
     Pin pin = null;
-    Button bt_setAlarm, bt_search;
+    Button bt_setAlarm, bt_search, bt_location;
     TextView tv_location, tw_weather;
     Switch AlarmSwitch;
     SimpleDateFormat sdf;
@@ -61,14 +63,21 @@ public class MainActivity extends AppCompatActivity {
     Adapter adapter;
     RecyclerView recycler;
     int i = 0;
+    GetLocation mylocation;     //현재 위치 가지고 오는 class
+    Boolean isGetLocation = false;          // 현재 위치 가지고 왔는지 체크하는 flag
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /***  위치값 가져오기 ***/
+        mylocation = new GetLocation();
+        mylocation.StartGetLocation(this);
+
         bt_setAlarm = (Button) findViewById(R.id.bt_setAlarm);
         bt_search = (Button) findViewById(R.id.bt_search);
+        bt_location = (Button)findViewById(R.id.bt_location);
         tv_location = (TextView)findViewById(R.id.tv_location);
         AlarmSwitch = (Switch)findViewById(R.id.AlarmSwitch);
 
@@ -99,17 +108,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /** 현재 위치 다시 가져오기 **/
+        bt_location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mylocation.StartGetLocation(MainActivity.this);
+                isGetLocation = false;
+            }
+        });
+
         /** SwipView 알람 기록 **/
         LinearLayoutManager manager = new LinearLayoutManager(this);
         adapter = new Adapter();
         recycler = findViewById(R.id.recyclerView);
         recycler.setLayoutManager(manager);
         recycler.setAdapter(adapter);
-
-
-        //adapter viewHolder
-
-
 
         /***  지역 위치 설정 ***/
         weather = null;
@@ -136,9 +149,17 @@ public class MainActivity extends AppCompatActivity {
         editor.clear();
         editor.commit();
 
-        /***  위치값 가져오기 ***/
-        GetLocation mylocation = new GetLocation();
-        mylocation.StartGetLocation(this);
+        /** 현재 위치 가지고 왔는지 체크하는 Task **/
+        TimerTask getLocation = new TimerTask() {
+            @Override
+            public void run() {
+                if(isGetLocation == true){
+                    mylocation.StopGetLocation();                 
+                }
+            }
+        };
+        Timer timer = new Timer();
+        timer.schedule(getLocation, 0, 3000);
 
         //Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
         //Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
@@ -459,6 +480,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /** LocationManager 멈춤 **/
+        public void StopGetLocation(){
+            locationManager.removeUpdates(mLocationListener);
+        }
+
         public int getxPin() {
             return xPin;
         }
@@ -536,6 +562,9 @@ public class MainActivity extends AppCompatActivity {
                 }catch (Exception E){
                     Log.i("TEST", "현재 위치 값으로 변환 실패");
                 }
+
+                /** 현재 위치 가지고 왔다고 flag 변경 **/
+                isGetLocation = true;
             }
 
             @Override
