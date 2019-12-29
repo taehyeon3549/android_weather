@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
     Intent ReceivedIntent;
     Adapter adapter;
     RecyclerView recycler;
-    int i = 0;
     GetLocation mylocation;     //현재 위치 가지고 오는 class
     Boolean isGetLocation = false;          // 현재 위치 가지고 왔는지 체크하는 flag
 
@@ -213,7 +212,9 @@ public class MainActivity extends AppCompatActivity {
         try{
             SharedPreferences getShared;
             int posion = ReceivedIntent.getExtras().getInt("posion");
+
             String key = "alarm"+ReceivedIntent.getExtras().getInt("posion");
+            Log.d("test",key);
             SharedPreferences prefs =getSharedPreferences("alarm", MODE_PRIVATE);
             String getShared2 = prefs.getString(key,"0"); //키값, 디폴트값
             Log.d("test", "11111111111111111111111111111111111전"+getShared2);
@@ -369,11 +370,12 @@ public class MainActivity extends AppCompatActivity {
                        Log.i("TEST", "posion 값 : "+index);
                        Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmModifyActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
                        //Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
-                       alarmModifyIntent.putExtra("posion",i);
-                       AlarmData tmp = alarmDataHashMap.get(i);
+                       alarmModifyIntent.putExtra("posion",index);
+                       AlarmData tmp = alarmDataHashMap.get(index);
                        alarmModifyIntent.putExtra("address",tmp.get_location());
                        alarmModifyIntent.putExtra("x",tmp.getX());
                        alarmModifyIntent.putExtra("y",tmp.getY());
+                       alarmModifyIntent.putExtra("postion",index);
 
                        alarmModifyIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                        startActivityForResult(alarmModifyIntent, REQUEST_Modify_ALARM);
@@ -391,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                        public void onClick(View view) {
                            Log.i("TEST", " right : 삭제하는 공간 버튼 형식");
                            Log.i("TEST", "posion 값 : "+index);
-                           AlarmData tmp = alarmDataHashMap.get(i);
+                           AlarmData tmp = alarmDataHashMap.get(index);
                            AlarmManager am = (AlarmManager)MainActivity.this.getSystemService(Context.ALARM_SERVICE);
                            Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
                            PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);

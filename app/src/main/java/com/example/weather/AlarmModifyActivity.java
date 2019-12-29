@@ -43,7 +43,7 @@ public class AlarmModifyActivity extends AppCompatActivity {
     String getLocationExtras = "주소";
     String getxExtras = "-1";
     String getyExtras = "-1";
-    int getPostionExtras = -1;
+    int getPostionExtras = 0;
     int tp_hour = 12;
     int tp_min = 12;
 
