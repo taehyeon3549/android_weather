@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     WeatherFetcher wf;
     private int REQUEST_SET_ALARM = 2;
     private int REQUEST_SET_LOCATE = 3;
+    private int REQUEST_Modify_ALARM = 4;
+
     Intent ReceivedIntent;
     Adapter adapter;
     RecyclerView recycler;
@@ -98,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
                 set_Alarm.putExtra("x",pin.getSx());
                 set_Alarm.putExtra("y",pin.getSy());
                 set_Alarm.putExtra("address", Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]);
-                Log.d("TEST","adapter.alarmDataHashMap.size()"+adapter.alarmDataHashMap.size());
-                set_Alarm.putExtra("postion",adapter.alarmDataHashMap.size()+1); //수정 완료
+                Log.d("TEST","adapter.alarmDataHashMap.size()"+adapter.alarmDataHashMap.size()+1);
+                set_Alarm.putExtra("postion",adapter.alarmDataHashMap.size()); //수정 완료
                 //데이터 수정 삭제를 위한  구문
                 //adapter.alarmDataHashMap
                 //현재 알람의 갯수를 파악하여 넘어간다.
@@ -138,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         lcf = new LocationCodeFetcher();
         wf = new WeatherFetcher();
         sdf = new SimpleDateFormat("yyyy년 MM월 dd일 HH시 정각");
-        pin = lcf.fetchLocationCode(Stringlocation);
+        pin = lcf.fetchLocationCode(Stringlocation);                                                                                                                        //x ,y값이 생성되는곳
 
         try {
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
@@ -157,6 +159,11 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = alarmPreferences.edit();
         editor.clear();
         editor.commit();
+
+        /***  위치값 가져오기 ***/
+        mylocation = new GetLocation();
+        mylocation.StartGetLocation(this);
+        Log.i("TEST", "create저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
 
         /** 현재 위치 가지고 왔는지 체크하는 Task **/
         TimerTask getLocation = new TimerTask() {
@@ -193,28 +200,49 @@ public class MainActivity extends AppCompatActivity {
             recycler.removeAllViews();
             recycler.setAdapter(adapter);
 
-
             Log.i("TEST", "저장된 알람 있음" + alarmPreferences.getAll().size() + "  시간" + alarmPreferences.getAll());
 
         }
 
         /***  주소 변경 부분 ***/
         try{
-            Log.d("test",ReceivedIntent.getExtras().getString("address"));
-            Log.d("test","4321 "+ReceivedIntent.getExtras().getString("x"));
-            Log.d("test","4321 "+ReceivedIntent.getExtras().getString("y"));
+            //Log.d("test",ReceivedIntent.getExtras().getString("address"));
+            //Log.d("test","4321 "+ReceivedIntent.getExtras().getString("x"));
+            //Log.d("test","4321 "+ReceivedIntent.getExtras().getString("y"));
 
             Stringlocation = ReceivedIntent.getExtras().getString("address").split("\\s");
             //pin = lcf.fetchLocationCode(Stringlocation); //아마도 NULL 로 인한 앱 종료 오류 해결?
             pin.setSx(ReceivedIntent.getExtras().getString("x"));
             pin.setSy(ReceivedIntent.getExtras().getString("y"));
 
-            Log.d("test","43211 "+pin.getSx());
-            Log.d("test","43211 "+pin.getSy());
+            Log.d("test", "1234"+pin.getSx());
+            Log.d("test", "1234"+pin.getSy());
             weather = wf.fetchWeather(pin.getSx(), pin.getSy());
         }catch (Exception E){
             Log.i("test", E.toString());
         }
+
+        try{
+            SharedPreferences getShared;
+            int posion = ReceivedIntent.getExtras().getInt("posion");
+            String key = "alarm"+ReceivedIntent.getExtras().getInt("posion");
+            SharedPreferences prefs =getSharedPreferences("alarm", MODE_PRIVATE);
+            String getShared2 = prefs.getString(key,"0"); //키값, 디폴트값
+            Log.d("test", "11111111111111111111111111111111111전"+getShared2);
+
+            String[] anyweather = getShared2.split("/");
+            String[] anytime = anyweather[0].split(":");
+
+            AlarmData tmp= adapter.alarmDataHashMap.get(posion);
+
+            tmp.set_time(anytime[0],anytime[1]);
+            tmp.set_weather(anyweather[1]);
+
+
+        }catch (Exception E){
+            Log.i("test", E.toString());
+        }
+
         weather.weatherIcon(MainActivity.this);
         tw_weather.setText(Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]+"\n"+sdf.format(weather.getBaseDate()) +"의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
         //Log.i("test", "x y 변경값 없음");
@@ -238,6 +266,12 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == AlarmActivity.RESULT_OK) {
             if (requestCode == REQUEST_SET_ALARM) {
                 Log.e("test", "알람 설정: intent 결과 받기 성공");
+                ReceivedIntent = data;
+            }
+        }
+        if (resultCode == AlarmModifyActivity.RESULT_OK) {
+            if (requestCode == REQUEST_Modify_ALARM) {
+                Log.e("test", "알람 수정 설정: intent 결과 받기 성공");
                 ReceivedIntent = data;
             }
         }
@@ -292,8 +326,10 @@ public class MainActivity extends AppCompatActivity {
                     //Log.i("TEST", "anytime " + anytime[0] + " 그리고 " + anytime[1]);
 
                     try{
-                        alarmData = new AlarmData(null,anyweather[1],Boolean.TRUE);
+                        //alarmData = new AlarmData(null,anyweather[1],Boolean.TRUE);
                         alarmData = new AlarmData(null,anyweather[1],anyweather[2],Boolean.TRUE);
+                        alarmData.setX(anyweather[3]);
+                        alarmData.setY(anyweather[4]);
                     }
                     catch (Exception E){
                         Log.i("TEST", "생성이 글러머금" + E.toString());
@@ -361,12 +397,16 @@ public class MainActivity extends AppCompatActivity {
                        public void onClick(View view) {
                        Log.i("TEST", " Left : 수정하는 공간 버튼 형식");
                        Log.i("TEST", "posion 값 : "+index);
-                       Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
+                       Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmModifyActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
+                       //Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
                        alarmModifyIntent.putExtra("posion",i);
                        AlarmData tmp = alarmDataHashMap.get(i);
+                       alarmModifyIntent.putExtra("address",tmp.get_location());
+                       alarmModifyIntent.putExtra("x",tmp.getX());
+                       alarmModifyIntent.putExtra("y",tmp.getY());
 
                        alarmModifyIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                       startActivity(alarmModifyIntent);
+                       startActivityForResult(alarmModifyIntent, REQUEST_Modify_ALARM);
                        }
                    }
                 );
