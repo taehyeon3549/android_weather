@@ -11,4 +11,5 @@
     <color name="left_bg">#4287ff</color>
     <color name="left_text">#FFF</color>
     <color name="maincolor">#33495f</color>
+    <color name="black">#000000</color>
 </resources>

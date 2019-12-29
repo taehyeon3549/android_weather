@@ -78,6 +78,7 @@
         android:layout_height="129dp"
         android:layout_weight="1"
         android:text="TextView"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/gl_bottom3"
         app:layout_constraintEnd_toStartOf="@+id/gl_left"
         app:layout_constraintHorizontal_bias="0.272"
