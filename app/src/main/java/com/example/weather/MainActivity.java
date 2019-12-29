@@ -2,16 +2,21 @@ package com.example.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -65,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
     int i = 0;
     GetLocation mylocation;     //현재 위치 가지고 오는 class
     Boolean isGetLocation = false;          // 현재 위치 가지고 왔는지 체크하는 flag
+
+
+
+    public static boolean TFLAG = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,12 +163,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if(isGetLocation == true){
-                    mylocation.StopGetLocation();                 
+                    mylocation.StopGetLocation();
                 }
             }
         };
         Timer timer = new Timer();
         timer.schedule(getLocation, 0, 3000);
+
+        /** 블루투스 스캔 실행 **/
+        //startBTeService();
 
         //Log.i("TEST", "발표시각 : " + sdf.format(weather.getBaseDate()));
         //Log.i("TEST", sdf.format(weather.getFcstDate()) + "의 비/눈 상황은 " + weather.getPty() + ", 하늘은 " + weather.getSky() + "입니다");
@@ -229,6 +241,24 @@ public class MainActivity extends AppCompatActivity {
                 ReceivedIntent = data;
             }
         }
+    }
+
+    private void startBTeService(){
+        //notification을 만들고 서비스를 foregrund로 실행시키는 부분
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel notificationChannel = new NotificationChannel("channel2", "2번채널", NotificationManager.IMPORTANCE_DEFAULT);
+        notificationChannel.setDescription("2번채널입니다");
+        notificationChannel.enableLights(true);
+        notificationChannel.setLightColor(Color.GREEN);
+        notificationChannel.enableVibration(true);
+        notificationChannel.setVibrationPattern(new long[]{100, 200, 100, 200});
+        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        notificationManager.createNotificationChannel(notificationChannel);
+
+        TFLAG = true;
+        Intent backStartIntent = new Intent(getApplicationContext() , BLEService.class);
+        backStartIntent.setAction("Action1");
+        ContextCompat.startForegroundService(getApplicationContext(), backStartIntent);
     }
 
     /***************************************
