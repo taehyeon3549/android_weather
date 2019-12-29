@@ -36,7 +36,7 @@
         <activity android:name=".ConnectBLE" />
         <activity android:name=".AddressSearchActivity" />
         <activity android:name=".AlarmActivity" />
-
+        <activity android:name=".AlarmModifyActivity"/>
         <activity android:name=".MainActivity">
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
