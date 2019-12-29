@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         bt_search = (Button) findViewById(R.id.bt_search);
         bt_location = (Button)findViewById(R.id.bt_location);
         tv_location = (TextView)findViewById(R.id.tv_location);
-        AlarmSwitch = (Switch)findViewById(R.id.AlarmSwitch);
 
         bt_setAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -457,19 +456,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            /** 스위치 Onchanged 이벤트 **/
-            viewHolder.alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if(isChecked == true){
-                        Log.i("TEST", "switch 버튼 TRUE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
-                        //index값으로 위치 및 hash 위치를 알수 있다. //수정파트
-                    }else{
-                        Log.i("TEST", "switch 버튼 FALSE 로 했을때 바인딩 된 DATA에 접근하는 방법 모르겠음");
-                        //수정파트
-                    }
-                }
-            });
 
             return new ViewHolder(itemView);
         }
@@ -515,7 +501,6 @@ public class MainActivity extends AppCompatActivity {
                 time = itemView.findViewById(R.id.tvTime);
                 weather = itemView.findViewById(R.id.tvWeather);
                 location = itemView.findViewById(R.id.tvLocation);
-                alarmSwitch = itemView.findViewById(R.id.AlarmSwitch);
             }
         }
     }
