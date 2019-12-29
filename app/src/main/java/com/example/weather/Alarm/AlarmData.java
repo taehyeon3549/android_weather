@@ -10,6 +10,13 @@ public class AlarmData {
     private String weather;
     private String location;
     private Boolean alarm_state;
+    private String x;
+    private String y;
+
+    public String getX(){ return x;}
+    public String getY(){ return y;}
+    public void setX(String x){this.x = x;}
+    public void setY(String y){this.y = y;}
 
     public AlarmData(Calendar calendar, String weather, Boolean alarm_state){
         this.weather = weather;

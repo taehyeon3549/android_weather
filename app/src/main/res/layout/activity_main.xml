@@ -42,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.37619698" />
+        app:layout_constraintGuide_percent="0.41" />
 
     <TextView
         android:id="@+id/textView"
@@ -61,11 +61,12 @@
         android:id="@+id/iv_weather"
         android:layout_width="128dp"
         android:layout_height="129dp"
-        android:layout_marginStart="12dp"
+        android:layout_marginStart="4dp"
         android:layout_weight="1"
         app:layout_constraintBottom_toTopOf="@+id/gl_bottom3"
         app:layout_constraintStart_toStartOf="@+id/gl_right"
         app:layout_constraintTop_toBottomOf="@+id/tv_location"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/sunny"
         tools:srcCompat="@drawable/sunny" />
 
@@ -77,9 +78,10 @@
         android:text="TextView"
         app:layout_constraintBottom_toTopOf="@+id/gl_bottom3"
         app:layout_constraintEnd_toStartOf="@+id/gl_left"
-        app:layout_constraintHorizontal_bias="0.272"
+        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toEndOf="@+id/iv_weather"
-        app:layout_constraintTop_toBottomOf="@+id/tv_location" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_location"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/bt_setAlarm"
@@ -95,8 +97,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="325dp"
-        android:layout_height="208dp"
+        android:layout_width="336dp"
+        android:layout_height="211dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="60dp"
         android:scrollbars="horizontal"
@@ -114,15 +116,17 @@
         android:text="검색"
         app:layout_constraintBottom_toTopOf="@+id/tw_weather"
         app:layout_constraintEnd_toStartOf="@+id/gl_left"
+        app:layout_constraintHorizontal_bias="0.384"
         app:layout_constraintStart_toEndOf="@+id/tv_location"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.3" />
 
     <TextView
         android:id="@+id/tv_location"
-        android:layout_width="244dp"
-        android:layout_height="42dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_width="246dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
         android:text="Location"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"

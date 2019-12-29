@@ -1,7 +1,5 @@
 package com.example.weather;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -20,17 +18,21 @@ import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.weather.Alarm.AlarmData;
 import com.example.weather.Alarm.AlarmReceiver;
 import com.example.weather.Alarm.DeviceBootReceiver;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.Locale;
 
-public class AlarmActivity extends AppCompatActivity {
+public class AlarmModifyActivity extends AppCompatActivity {
 
     Button bt_finish;
     RadioGroup rg_weather;
@@ -64,7 +66,7 @@ public class AlarmActivity extends AppCompatActivity {
         getyExtras = ReceivedIntent.getExtras().getString("y");
         getPostionExtras = ReceivedIntent.getExtras().getInt("postion");
 
-        Log.d("test","1111111111111111111111111111111111111111111intent int값 확인"+getPostionExtras);
+        Log.d("test","2222222222222222222 int값 확인"+getPostionExtras);
 
         Log.d("test","address int값 확인"+getLocationExtras);
         Log.d("test","intent x 확인"+getxExtras);
@@ -153,7 +155,7 @@ public class AlarmActivity extends AppCompatActivity {
 
                 /** 알람 세팅 **/
                 //setAlarm(calendar, checked_weather);
-                setAlarm(calendar, checked_weather);
+                ModifyAlarm(calendar, checked_weather);
 
                 //Toast.makeText(AlarmActivity.this, "날씨는  " + checked_weather + "시간은 " + tp_hour + "시" + tp_min + "분", Toast.LENGTH_SHORT).show();
                 finish();
@@ -161,19 +163,17 @@ public class AlarmActivity extends AppCompatActivity {
         });
     }
 
-    void setAlarm(Calendar calendar, String checked_weather)
+    void ModifyAlarm(Calendar calendar, String checked_weather)
     {
         /** AlarmData 생성 **/
         //AlarmData myData = new AlarmData(calendar, checked_weather, true);
         AlarmData myData = new AlarmData(calendar, checked_weather,getLocationExtras, true);
-        myData.setX(getxExtras);
-        myData.setY(getyExtras);
-        Log.i("TEST", myData.get_time());
+        //Log.i("TEST", myData.get_time());
 
         /** sharedPreferencs 값 넣음 **/
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = alarmPreferences.edit();
+        //PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        //SharedPreferences alarmPreferences =  PreferenceManager.getDefaultSharedPreferences(this);
+        //SharedPreferences.Editor editor = alarmPreferences.edit();
 
         /*******************************
          * 알람History 설정
@@ -182,9 +182,35 @@ public class AlarmActivity extends AppCompatActivity {
          * Tag : alarm01
          * Value : 설정 시간/설정 날씨/지역정보
          *******************************/
-        //editor.putString("alarm"+(alarmPreferences.getAll().size()+1), myData.get_time()+"/"+checked_weather);
-        editor.putString("alarm"+(alarmPreferences.getAll().size()+1), myData.get_time()+"/"+checked_weather+"/"+getLocationExtras+"/"+getxExtras+"/"+getyExtras);
-        editor.commit();
+        String key = "alarm"+getPostionExtras;
+        SharedPreferences prefs =getSharedPreferences("alarm", MODE_PRIVATE);
+        String getShared = prefs.getString(key,"0"); //키값, 디폴트값
+
+
+        Log.d("test", "전"+getShared);
+
+        String[] anyweather = getShared.split("/");
+        String[] anytime = anyweather[0].split(":");
+
+
+        prefs.edit().putString(key, myData.get_time()+"/"+checked_weather+"/"+getLocationExtras+"/"+getxExtras+"/"+getyExtras).commit();
+
+
+        SharedPreferences prefs1 =getSharedPreferences("alarm", MODE_PRIVATE);
+        String getShared1 = prefs1.getString(key,"0"); //키값, 디폴트값
+
+        Log.d("test", "후"+getShared1);
+
+
+        SharedPreferences prefb =getSharedPreferences("alarm", MODE_PRIVATE);
+        Collection<?> col =  prefb.getAll().values();
+        Iterator<?> it = col.iterator();
+
+        while(it.hasNext())
+        {
+            String msg = (String)it.next();
+            Log.d("TEST", "테스트"+msg);
+        }
 
         Boolean dailyNotify = true; // 무조건 알람을 사용
 
@@ -195,8 +221,9 @@ public class AlarmActivity extends AppCompatActivity {
         /** 선택한 날씨 정보 Intent로 넘김 **/
         /** PendingIntent 의 4번째 파라미터는 Flag로 이미 실행 중인 알람이 있다면 extra Data만 교체함 **/
         alarmIntent.putExtra("weather", checked_weather);
-        alarmIntent.putExtra("x", myData.getX());
-        alarmIntent.putExtra("y", myData.getY());
+        alarmIntent.putExtra("x", getxExtras);
+        alarmIntent.putExtra("y", getyExtras);
+        alarmIntent.putExtra("posion", getPostionExtras);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, getPostionExtras/*여기에 postion 값을 넣는다.*/, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 //        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0/*여기에 postion 값을 넣는다.*/, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -222,19 +249,10 @@ public class AlarmActivity extends AppCompatActivity {
         /** 메인 화면으로 이동 **/
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        intent.putExtra("posion", getPostionExtras);
+        //여기 정보를 담아서 보내 줘야한다. 하지만...쉐어드 프리프런스...
         //startActivity(intent);
         setResult(RESULT_OK, intent);
-
-//        else { //Disable Daily Notifications
-//            if (PendingIntent.getBroadcast(this, 0, alarmIntent, 0) != null && alarmManager != null) {
-//                alarmManager.cancel(pendingIntent);
-//                //Toast.makeText(this,"Notifications were disabled",Toast.LENGTH_SHORT).show();
-//            }
-//            pm.setComponentEnabledSetting(receiver,
-//                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-//                    PackageManager.DONT_KILL_APP);
-//        }
+        Log.d("test", "수정 엑티비티===========================================================끝=======================================================");
     }
-
-
 }
