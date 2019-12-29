@@ -26,7 +26,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".PermissionActivity"></activity>
+        <activity android:name=".Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".PermissionActivity" />
 
         <service
             android:name=".BLEService"
@@ -36,14 +43,10 @@
         <activity android:name=".ConnectBLE" />
         <activity android:name=".AddressSearchActivity" />
         <activity android:name=".AlarmActivity" />
-        <activity android:name=".AlarmModifyActivity"/>
+        <activity android:name=".AlarmModifyActivity" />
         <activity android:name=".MainActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity>
+        </activity>
         <activity android:name=".ConnectionBLE" />
 
         <receiver
