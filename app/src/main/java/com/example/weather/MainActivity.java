@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d("test","4321 "+ReceivedIntent.getExtras().getString("y"));
 
             Stringlocation = ReceivedIntent.getExtras().getString("address").split("\\s");
-            pin = lcf.fetchLocationCode(Stringlocation);
+            //pin = lcf.fetchLocationCode(Stringlocation); //아마도 NULL 로 인한 앱 종료 오류 해결?
             pin.setSx(ReceivedIntent.getExtras().getString("x"));
             pin.setSy(ReceivedIntent.getExtras().getString("y"));
 
@@ -316,9 +316,6 @@ public class MainActivity extends AppCompatActivity {
 
                        alarmModifyIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                        startActivity(alarmModifyIntent);
-
-
-
                        }
                    }
                 );
