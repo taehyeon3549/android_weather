@@ -41,7 +41,9 @@
             android:exported="true" />
 
         <activity android:name=".ConnectBLE" />
-        <activity android:name=".AddressSearchActivity" />
+        <activity android:name=".AddressSearchActivity">
+
+        </activity>
         <activity android:name=".AlarmActivity" />
         <activity android:name=".AlarmModifyActivity" />
         <activity android:name=".MainActivity">
