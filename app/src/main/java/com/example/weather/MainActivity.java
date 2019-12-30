@@ -427,7 +427,9 @@ public class MainActivity extends AppCompatActivity {
                            Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
                            PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                            if (sender != null) { am.cancel(sender); sender.cancel(); }
+                           Log.i("TEST", "삭제 전 저장된 데이터가 있는가 확인 : "+ alarmDataHashMap.get(index));
                            alarmDataHashMap.remove(index);
+                           Log.i("TEST", "삭제 후 저장된 데이터가 있는가 확인 : "+ alarmDataHashMap.get(index));
 
                        }
                    }

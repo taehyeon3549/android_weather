@@ -41,6 +41,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Boolean clude = false;
         String getxExtra = intent.getStringExtra("x");
         String getyExtra = intent.getStringExtra("y");
+        int getPosion = intent.getIntExtra("posion",0);
         Log.i("TEST", "AlarmReceiver_넘겨받은 선택된 날씨" + getWeatherExtra);
         Log.i("TEST", "AlarmReceiver_넘겨받은 선택된 좌표 x" + getxExtra);
         Log.i("TEST", "AlarmReceiver_넘겨받은 선택된 좌표 y" + getyExtra);
@@ -78,7 +79,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-            PendingIntent pendingI = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+            PendingIntent pendingI = PendingIntent.getActivity(context, getPosion, notificationIntent, 0);
 
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "default");
