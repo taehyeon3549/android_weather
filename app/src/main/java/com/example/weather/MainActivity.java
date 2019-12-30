@@ -411,27 +411,6 @@ public class MainActivity extends AppCompatActivity {
                 );
             }
 
-            if (viewHolder.rightView != null) {
-                viewHolder.rightView.setClickable(true);
-                //viewHolder.rightView.setOnClickListener(onClick);
-                //수정파트
-                viewHolder.rightView.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View view) {
-                           Log.i("TEST", " right : 삭제하는 공간 버튼 형식");
-                           Log.i("TEST", "posion 값 : "+index);
-                           AlarmData tmp = alarmDataHashMap.get(i);
-                           AlarmManager am = (AlarmManager)MainActivity.this.getSystemService(Context.ALARM_SERVICE);
-                           Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
-                           PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                           if (sender != null) { am.cancel(sender); sender.cancel(); }
-                           alarmDataHashMap.remove(index);
-
-                       }
-                   }
-                );
-            }
-
             viewHolder.swipeLayout.setOnSwipeListener(new SwipeLayout.OnSwipeListener() {
                 @Override
                 public void onBeginSwipe(SwipeLayout swipeLayout, boolean moveToRight) {

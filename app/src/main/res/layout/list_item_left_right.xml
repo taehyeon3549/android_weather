@@ -35,32 +35,6 @@
 
     </LinearLayout>
 
-    <!--RIGHT-->
-    <LinearLayout
-        android:id="@+id/right_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/right_bg"
-        android:orientation="horizontal"
-        app:bring_to_clamp="150dp"
-        app:clamp="self"
-        app:gravity="right"
-        app:sticky="100dp">
-
-        <TextView
-            style="@style/RightTextView"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:background="#1000"
-            android:text="삭제" />
-
-        <TextView
-            style="@style/RightTextView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="삭제합니다ㅏㅏㅏㅏㅏ" />
-
-    </LinearLayout>
 
     <!--LEFT-->
     <FrameLayout
