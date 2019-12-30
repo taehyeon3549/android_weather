@@ -197,7 +197,7 @@ public class AlarmActivity extends AppCompatActivity {
         alarmIntent.putExtra("weather", checked_weather);
         alarmIntent.putExtra("x", myData.getX());
         alarmIntent.putExtra("y", myData.getY());
-
+        alarmIntent.putExtra("posion", getPostionExtras);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, getPostionExtras/*여기에 postion 값을 넣는다.*/, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 //        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0/*여기에 postion 값을 넣는다.*/, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);

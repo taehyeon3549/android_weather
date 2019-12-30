@@ -45,6 +45,7 @@ import com.example.weather.cLocation.ConvertLatLon;
 import java.io.IOException;
 import java.security.Key;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
     Intent ReceivedIntent;
     Adapter adapter;
     RecyclerView recycler;
-    int i = 0;
     GetLocation mylocation;     //현재 위치 가지고 오는 class
     Boolean isGetLocation = false;          // 현재 위치 가지고 왔는지 체크하는 flag
 
@@ -99,8 +99,11 @@ public class MainActivity extends AppCompatActivity {
                 set_Alarm.putExtra("x",pin.getSx());
                 set_Alarm.putExtra("y",pin.getSy());
                 set_Alarm.putExtra("address", Stringlocation[0]+" "+ Stringlocation[1]+" "+ Stringlocation[2]);
-                Log.d("TEST","adapter.alarmDataHashMap.size()"+adapter.alarmDataHashMap.size()+1);
-                set_Alarm.putExtra("postion",adapter.alarmDataHashMap.size()); //수정 완료
+                //Log.d("TEST","adapter.alarmDataHashMap.size()"+adapter.alarmDataHashMap.size()+1);
+                Log.d("TEST","adapter.alarmDataHashMap.size()"+adapter.alarmDataArrayList.size()+1);
+                //set_Alarm.putExtra("postion",adapter.alarmDataHashMap.size()); //수정 완료
+
+                set_Alarm.putExtra("postion",adapter.alarmDataArrayList.size()); //수정 완료
                 //데이터 수정 삭제를 위한  구문
                 //adapter.alarmDataHashMap
                 //현재 알람의 갯수를 파악하여 넘어간다.
@@ -224,7 +227,9 @@ public class MainActivity extends AppCompatActivity {
         try{
             SharedPreferences getShared;
             int posion = ReceivedIntent.getExtras().getInt("posion");
+
             String key = "alarm"+ReceivedIntent.getExtras().getInt("posion");
+            Log.d("test",key);
             SharedPreferences prefs =getSharedPreferences("alarm", MODE_PRIVATE);
             String getShared2 = prefs.getString(key,"0"); //키값, 디폴트값
             Log.d("test", "11111111111111111111111111111111111전"+getShared2);
@@ -232,7 +237,8 @@ public class MainActivity extends AppCompatActivity {
             String[] anyweather = getShared2.split("/");
             String[] anytime = anyweather[0].split(":");
 
-            AlarmData tmp= adapter.alarmDataHashMap.get(posion);
+            //AlarmData tmp= adapter.alarmDataHashMap.get(posion);
+            AlarmData tmp= adapter.alarmDataArrayList.get(posion);
 
             tmp.set_time(anytime[0],anytime[1]);
             tmp.set_weather(anyweather[1]);
@@ -301,7 +307,8 @@ public class MainActivity extends AppCompatActivity {
 
         private int count = 0;           //세팅 갯수
         private  int[] itemsOffset = new int[count];
-        private HashMap<Integer, AlarmData> alarmDataHashMap = new HashMap<>();
+        //private HashMap<Integer, AlarmData> alarmDataHashMap = new HashMap<>();
+        private ArrayList<AlarmData> alarmDataArrayList = new ArrayList<>();
         AlarmData alarmData;
 
         SharedPreferences getShared;
@@ -335,7 +342,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     alarmData.set_time(anytime[0], anytime[1]);
-                    alarmDataHashMap.put(count - 1, alarmData);
+                    //alarmDataHashMap.put(count - 1, alarmData);
+                    alarmDataArrayList.add(alarmData);                                                                  // HashMap  -> ArrayList 로 변경
 
                 }catch (Exception E){
                     Log.i("TEST", "sharedPreferences 값 못 가져옴 " + E.toString());
@@ -375,9 +383,14 @@ public class MainActivity extends AppCompatActivity {
             final ViewHolder viewHolder = new ViewHolder(itemView);
 
             /** textview 삽입 ( 해당 row index는 viewType으로 구분) **/
-            viewHolder.weather.setText(alarmDataHashMap.get(index).get_weather());
-            viewHolder.time.setText(alarmDataHashMap.get(index).get_time());
-            viewHolder.location.setText(alarmDataHashMap.get(index).get_location());
+            //viewHolder.weather.setText(alarmDataHashMap.get(index).get_weather());
+            //viewHolder.time.setText(alarmDataHashMap.get(index).get_time());
+            //viewHolder.location.setText(alarmDataHashMap.get(index).get_location());
+
+
+            viewHolder.weather.setText(alarmDataArrayList.get(index).get_weather());                            // HashMap  -> ArrayList 로 변경
+            viewHolder.time.setText(alarmDataArrayList.get(index).get_time());                                  // HashMap  -> ArrayList 로 변경
+            viewHolder.location.setText(alarmDataArrayList.get(index).get_location());                          // HashMap  -> ArrayList 로 변경
 
 
             View.OnClickListener onClick = new View.OnClickListener() {
@@ -387,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
 
+            /*
             if (viewHolder.leftView != null) {
                 viewHolder.leftView.setClickable(true);
                 //viewHolder.leftView.setOnClickListener(onClick);
@@ -398,14 +412,63 @@ public class MainActivity extends AppCompatActivity {
                        Log.i("TEST", "posion 값 : "+index);
                        Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmModifyActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
                        //Intent alarmModifyIntent = new Intent(com.example.weather.MainActivity.this,AlarmActivity.class); //static class 에서 는 불가능 함 -> adapter static 제거
-                       alarmModifyIntent.putExtra("posion",i);
-                       AlarmData tmp = alarmDataHashMap.get(i);
+                       alarmModifyIntent.putExtra("posion",index);
+
+                       //AlarmData tmp = alarmDataHashMap.get(index);
+                       AlarmData tmp = alarmDataArrayList.get(index);                                             // HashMap  -> ArrayList 로 변경
+
                        alarmModifyIntent.putExtra("address",tmp.get_location());
                        alarmModifyIntent.putExtra("x",tmp.getX());
                        alarmModifyIntent.putExtra("y",tmp.getY());
+                       alarmModifyIntent.putExtra("postion",index);
 
                        alarmModifyIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                        startActivityForResult(alarmModifyIntent, REQUEST_Modify_ALARM);
+                       }
+                   }
+                );
+            }
+            */
+
+
+            if (viewHolder.rightView != null) {
+                viewHolder.rightView.setClickable(true);
+                //viewHolder.rightView.setOnClickListener(onClick);
+                //수정파트
+                viewHolder.rightView.setOnClickListener(new View.OnClickListener() {
+                       @Override
+                       public void onClick(View view) {
+                           Log.i("TEST", " right : 삭제하는 공간 버튼 형식");
+                           Log.i("TEST", "posion 값 : "+index);
+                           //AlarmData tmp = alarmDataHashMap.get(index);
+                           AlarmData tmp = alarmDataArrayList.get(index);                                             // HashMap  -> ArrayList 로 변경
+                           AlarmManager am = (AlarmManager)MainActivity.this.getSystemService(Context.ALARM_SERVICE);
+                           Intent intent = new Intent(MainActivity.this, AlarmReceiver.class);
+                           PendingIntent sender = PendingIntent.getBroadcast(MainActivity.this, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                           if (sender != null) { am.cancel(sender); sender.cancel(); }
+                           //Log.i("TEST", "삭제 전 저장된 데이터가 있는가 확인 : "+ alarmDataHashMap.get(index));
+                           Log.i("TEST", "삭제 전 저장된 데이터가 있는가 확인 : "+ alarmDataArrayList.get(index));
+                           //alarmDataHashMap.remove(index);
+
+
+                           String key = "alarm"+index;
+                           Log.d("test",key);
+                           SharedPreferences prefs =getSharedPreferences("alarm", MODE_PRIVATE);
+                           SharedPreferences.Editor editor = prefs.edit();
+                           editor.remove("key"); // will delete key key_name4
+
+                            // Save the changes in SharedPreferences
+                           editor.commit(); // commit changes
+                           alarmDataArrayList.remove(index);                                             // HashMap  -> ArrayList 로 변경
+
+//                           setHasStableIds(true);
+                           adapter.notifyDataSetChanged();
+
+                           //Intent intent2 = new Intent(MainActivity.this,MainActivity.class);
+                           //intent2.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                           //startActivity(intent2);
+                           //Log.i("TEST", "삭제 후 저장된 데이터가 있는가 확인 : "+ alarmDataHashMap.get(index));
+//                           Log.i("TEST", "삭제 전 저장된 데이터가 있는가 확인 : "+ alarmDataArrayList.get(index));
                        }
                    }
                 );

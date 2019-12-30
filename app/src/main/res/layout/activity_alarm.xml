@@ -36,10 +36,10 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_end="40dp" />
 
-    <TextView
+    <ImageView
         android:id="@+id/editText2"
-        android:layout_width="320dp"
-        android:layout_height="63dp"
+        android:layout_width="296dp"
+        android:layout_height="102dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="알람"
@@ -48,7 +48,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/gl_left2"
         app:layout_constraintStart_toStartOf="@+id/gl_right2"
-        app:layout_constraintTop_toTopOf="@+id/gl_top2" />
+        app:layout_constraintTop_toTopOf="@+id/gl_top2"
+        app:srcCompat="@drawable/setalarm" />
 
     <RadioGroup
         android:id="@+id/rg_weather"
@@ -113,6 +114,8 @@
         android:layout_width="317dp"
         android:layout_height="42dp"
         android:text="설정 완료"
+        android:backgroundTint="@color/maincolor"
+        android:textColor="@color/center_bg"
         app:layout_constraintBottom_toTopOf="@+id/gl_bottom2"
         app:layout_constraintEnd_toStartOf="@+id/gl_left2"
         app:layout_constraintHorizontal_bias="0.51"
